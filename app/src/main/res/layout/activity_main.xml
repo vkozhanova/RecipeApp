@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_gray"
+    android:background="@color/background_gray_color"
     tools:context=".MainActivity">
 
 
@@ -14,7 +14,7 @@
      android:layout_width="match_parent"
      android:layout_height="wrap_content"
      android:orientation="horizontal"
-     android:padding="16dp"
+     android:padding="@dimen/main_space_16"
      app:layout_constraintBottom_toBottomOf="parent"
      app:layout_constraintStart_toStartOf="parent"
      app:layout_constraintEnd_toEndOf="parent"
@@ -26,8 +26,8 @@
          android:layout_width="0dp"
          android:layout_height="wrap_content"
          android:layout_weight="1"
-         android:layout_marginEnd="2dp"
-         android:backgroundTint="@color/button_blue"
+         android:layout_marginEnd="@dimen/button_margin_half_2"
+         app:backgroundTint="@color/button_blue_color"
          android:text="@string/button_categories"
          />
 
@@ -36,14 +36,14 @@
          style="@style/StyleNavButton"
          android:layout_width="0dp"
          android:layout_height="wrap_content"
-         android:layout_marginStart="2dp"
+         android:layout_marginStart="@dimen/button_margin_half_2"
          android:layout_weight="1"
-         android:backgroundTint="@color/button_red"
+         app:backgroundTint="@color/button_red_color"
          android:text="@string/button_favorites"
          app:icon="@drawable/ic_heart_empty"
-         app:iconSize="24dp"
-         app:iconGravity="end"
-         app:iconPadding="8dp" />
+         app:iconSize="@dimen/icon_size"
+         app:iconGravity="textEnd"
+         app:iconPadding="@dimen/icon_padding" />
 
  </LinearLayout>
 
