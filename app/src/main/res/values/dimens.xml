@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="main_space_16">16dp</dimen>
+    <dimen name="main_space_half_8">8dp</dimen>
+    <dimen name="button_margin_half_2">2dp</dimen>
+
+    <dimen name="button_min_height">48dp</dimen>
+    <dimen name="button_vertical_padding">8dp</dimen>
+    <dimen name="button_horizontal_padding">20dp</dimen>
+    <dimen name="button_corner_radius">8dp</dimen>
+
+    <dimen name="icon_size">24dp</dimen>
+    <dimen name="icon_padding">8dp</dimen>
+</resources>

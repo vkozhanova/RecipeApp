@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="StyleNavButton" parent="Widget.Material3.Button">
+        <item name="android:minHeight">@dimen/button_min_height</item>
+        <item name="android:paddingVertical">@dimen/button_vertical_padding</item>
+        <item name="android:paddingHorizontal">@dimen/button_horizontal_padding</item>
+
+        <item name="android:textAppearance">@style/StyleTitle14</item>
+
+        <item name="background">@null</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
+    </style>
+
+    <style name="StyleTitle14" parent="android:TextAppearance.Material.Widget.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white_color</item>
+        <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+</resources>
