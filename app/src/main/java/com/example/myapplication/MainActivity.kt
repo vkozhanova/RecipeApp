@@ -1,7 +1,9 @@
 package com.example.myapplication
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.myapplication.fragments.CategoriesListFragment
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
@@ -13,5 +15,11 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val categoriesListFragment = CategoriesListFragment()
+        if(savedInstanceState == null) {
+            supportFragmentManager.commit {
+                replace(R.id.mainContainer, categoriesListFragment)
+            }
+        }
     }
 }

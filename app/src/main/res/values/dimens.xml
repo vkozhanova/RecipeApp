@@ -11,4 +11,8 @@
 
     <dimen name="icon_size">24dp</dimen>
     <dimen name="icon_padding">8dp</dimen>
+
+    <dimen name="title_plate_top">196dp</dimen>
+    <dimen name="inside_plate_padding">10dp</dimen>
+
 </resources>
