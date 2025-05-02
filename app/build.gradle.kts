@@ -40,10 +40,10 @@ android {
         jvmTarget = "11"
     }
 
-
 }
 
 dependencies {
+    implementation (libs.androidx.fragment.ktx)
     implementation (libs.material)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

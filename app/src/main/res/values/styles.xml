@@ -17,4 +17,21 @@
         <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
         <item name="android:textAllCaps">true</item>
     </style>
+
+    <style name="CategoryTitlePlate">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_title_plate</item>
+        <item name="android:layout_marginTop">@dimen/title_plate_top</item>
+    </style>
+
+    <style name="CategoryTitleText" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@color/title_purple_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/inside_plate_padding</item>
+        <item name="android:ellipsize">end</item>
+    </style>
 </resources>
