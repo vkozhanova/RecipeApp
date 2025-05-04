@@ -35,22 +35,24 @@
      <Button
          android:id="@+id/btnCategories"
          style="@style/StyleNavButton"
+         app:backgroundTint="@null"
          android:layout_width="0dp"
          android:layout_height="wrap_content"
          android:layout_weight="1"
          android:layout_marginEnd="@dimen/button_margin_half_2"
-         app:backgroundTint="@color/button_blue_color"
+         android:background="@drawable/button_blue_background_selector"
          android:text="@string/categories"
          />
 
      <Button
          android:id="@+id/btnFavorites"
          style="@style/StyleNavButton"
+         app:backgroundTint="@null"
          android:layout_width="0dp"
          android:layout_height="wrap_content"
          android:layout_marginStart="@dimen/button_margin_half_2"
          android:layout_weight="1"
-         app:backgroundTint="@color/button_red_color"
+         android:background="@drawable/button_red_background_selector"
          android:text="@string/favorites"
          app:icon="@drawable/ic_heart_empty"
          app:iconSize="@dimen/icon_size"
