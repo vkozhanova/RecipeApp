@@ -6,12 +6,15 @@ import androidx.fragment.app.commit
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.fragments.CategoriesListFragment
 import com.example.myapplication.fragments.FavoritesFragment
+import androidx.fragment.app.replace
+
 
 class MainActivity : AppCompatActivity() {
+
     private var _binding: ActivityMainBinding? = null
     private val binding
-        get() = _binding!!
-
+        get() = _binding
+            ?: throw IllegalStateException("Binding for ActivityMainBinding must not be null")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,28 +22,32 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if (savedInstanceState == null) {
-            showFragment(CategoriesListFragment())
+            initFirstFragment()
         }
-        setupNavigation()
+        initNavigation()
     }
 
-    private fun showFragment(fragment: Fragment) {
-        supportFragmentManager.commit {
-            replace(R.id.mainContainer, fragment)
+    private fun initFirstFragment() {
+        supportFragmentManager.commit{
             setReorderingAllowed(true)
-            addToBackStack(null)
+            replace<CategoriesListFragment>(R.id.mainContainer)
         }
-
     }
 
-    private fun setupNavigation() {
+    private fun initNavigation() {
         binding.btnCategories.setOnClickListener {
-           showFragment(CategoriesListFragment())
-
+            showFragment<CategoriesListFragment>()
         }
         binding.btnFavorites.setOnClickListener {
-            showFragment(FavoritesFragment())
+            showFragment<FavoritesFragment>()
+        }
+    }
 
+    private inline fun <reified T : Fragment> showFragment() {
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace<T>(R.id.mainContainer)
+            addToBackStack(null)
         }
     }
 
@@ -49,3 +56,10 @@ class MainActivity : AppCompatActivity() {
         _binding = null
     }
 }
+
+
+
+
+
+
+
