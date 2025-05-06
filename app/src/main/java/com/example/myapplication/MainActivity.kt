@@ -8,7 +8,6 @@ import com.example.myapplication.fragments.CategoriesListFragment
 import com.example.myapplication.fragments.FavoritesFragment
 import androidx.fragment.app.replace
 
-
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null

@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 
 class CategoriesListFragment: Fragment() {
-
     private var _binding: FragmentListCategoriesBinding? = null
     private val binding
         get() = _binding

@@ -43,7 +43,7 @@ android {
 }
 
 dependencies {
-    implementation ("androidx.fragment:fragment-ktx:1.6.2")
+
     implementation (libs.androidx.fragment.ktx)
     implementation (libs.material)
     implementation(libs.androidx.core.ktx)
