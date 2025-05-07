@@ -1,12 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.MyApplication" parent="Theme.Material3.DayNight" >
+    <style name="Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar" >
         <item name="android:statusBarColor">@color/background_gray_color</item>
         <item name="android:navigationBarColor">@color/background_gray_color</item>
 
-        <item name="materialButtonStyle">@style/StyleNavButton</item>
-
-        <item name="colorPrimary">@color/button_blue_color</item>
+        <item name="colorPrimary">@color/bt_blue_default_color</item>
         <item name="colorOnPrimary">@color/white_color</item>
 
 
