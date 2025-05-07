@@ -1,4 +1,5 @@
 package com.example.myapplication
+
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initFirstFragment() {
-        supportFragmentManager.commit{
+        supportFragmentManager.commit {
             setReorderingAllowed(true)
             replace<CategoriesListFragment>(R.id.mainContainer)
         }
@@ -55,10 +56,3 @@ class MainActivity : AppCompatActivity() {
         _binding = null
     }
 }
-
-
-
-
-
-
-
