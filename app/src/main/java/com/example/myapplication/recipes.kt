@@ -1,11 +1,11 @@
 package com.example.myapplication
 
-object STUB{
+object STUB {
     private val categories = listOf(
         Category(
             id = 0,
             title = "Бургеры",
-             description = "Рецепты всех популярных видов бургеров",
+            description = "Рецепты всех популярных видов бургеров",
             imageUrl = "burger.png"
         ),
         Category(
