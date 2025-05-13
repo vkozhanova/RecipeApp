@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/CardStyle"
+    app:cardCornerRadius="@dimen/button_corner_radius"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/space_half_4"
+    app:cardElevation="@dimen/space_half_4"
+    app:cardPreventCornerOverlap="false"
+    app:cardUseCompatPadding="true"
+    >
+
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+    >
+
+        <ImageView
+            android:id="@+id/card_image"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/card_image_height"
+            android:scaleType="centerCrop"
+            android:src="@drawable/card_burger"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/card_text_height"
+            android:orientation="vertical"
+            android:padding="@dimen/card_padding"
+            >
+
+            <TextView
+                android:id="@+id/card_title"
+                style="@style/CardTitleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/burgers"
+                />
+
+            <TextView
+                android:id="@+id/card_text"
+                style="@style/CardText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/burger_card_description" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -11,4 +11,6 @@
 
     <color name="background_gray_color">#F4FAFF</color>
     <color name="title_purple_color">#5F3678</color>
+
+    <color name="card_text_color">#666666</color>
 </resources>

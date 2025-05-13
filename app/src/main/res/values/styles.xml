@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="StyleNavButton" parent="Widget.Material3.Button">
         <item name="android:minHeight">@dimen/button_min_height</item>
         <item name="android:paddingVertical">@dimen/button_vertical_padding</item>
         <item name="android:paddingHorizontal">@dimen/button_horizontal_padding</item>
-
         <item name="android:textAppearance">@style/StyleTitle14</item>
         <item name="cornerRadius">@dimen/button_corner_radius</item>
     </style>
@@ -19,17 +19,42 @@
     <style name="CategoryTitlePlate">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/bg_title_plate</item>
         <item name="android:layout_marginTop">@dimen/title_plate_top</item>
     </style>
 
     <style name="CategoryTitleText" parent="TextAppearance.AppCompat.Title">
+        <item name="android:background">@drawable/bg_title_plate</item>
         <item name="android:textColor">@color/title_purple_color</item>
         <item name="android:textSize">20sp</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
         <item name="android:gravity">center</item>
+        <item name="android:layout_height">@dimen/title_plate_height</item>
         <item name="android:padding">@dimen/inside_plate_padding</item>
         <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="CardTitleText">
+        <item name="android:textColor">@color/title_purple_color</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <style name="CardText">
+        <item name="android:textColor">@color/card_text_color</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+        <item name="android:paddingRight">@dimen/card_padding</item>
+    </style>
+
+    <style name="CardStyle">
+        <item name="android:layout_width">@dimen/card_width</item>
+        <item name="android:layout_height">@dimen/card_height</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 </resources>
