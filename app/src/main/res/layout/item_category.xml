@@ -2,43 +2,38 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/CardStyle"
-    app:cardCornerRadius="@dimen/button_corner_radius"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/space_half_4"
+    app:cardCornerRadius="@dimen/main_space_half_8"
     app:cardElevation="@dimen/space_half_4"
     app:cardPreventCornerOverlap="false"
-    app:cardUseCompatPadding="true"
-    >
+    app:cardUseCompatPadding="true">
 
-<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-    >
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/card_image"
             android:layout_width="match_parent"
             android:layout_height="@dimen/card_image_height"
             android:scaleType="centerCrop"
-            android:src="@drawable/card_burger"
-            />
+            android:src="@drawable/burger_card" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/card_text_height"
             android:orientation="vertical"
-            android:padding="@dimen/card_padding"
-            >
+            android:padding="@dimen/main_space_half_8">
 
             <TextView
                 android:id="@+id/card_title"
                 style="@style/CardTitleText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/burgers"
-                />
+                android:text="@string/burgers" />
 
             <TextView
                 android:id="@+id/card_text"
