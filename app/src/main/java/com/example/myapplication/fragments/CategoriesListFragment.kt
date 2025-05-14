@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.myapplication.CategoriesAdapter
+import com.example.myapplication.STUB
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 
 class CategoriesListFragment : Fragment() {
@@ -20,6 +23,15 @@ class CategoriesListFragment : Fragment() {
     ): View {
         _binding = FragmentListCategoriesBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val categories = STUB.getCategories()
+        val adapter = CategoriesAdapter(categories)
+        binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.rvCategories.adapter = adapter
     }
 
     override fun onDestroyView() {

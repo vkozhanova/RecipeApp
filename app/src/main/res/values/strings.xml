@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">RecipeApp</string>
-    <string name="categories">КАТЕГОРИИ</string>
-    <string name="favorites">ИЗБРАННОЕ</string>
-
+    <string name="categories">категории</string>
+    <string name="favorites">избранное</string>
+    <string name="burgers">бургеры</string>
+    <string name="burger_card_description">Рецепты всех популярных видов бургеров</string>
 </resources>

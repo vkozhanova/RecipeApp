@@ -4,14 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray_color"
-    android:padding="@dimen/main_space_16"
-    >
+    android:padding="@dimen/main_space_16">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/title_background"
         style="@style/CategoryTitlePlate"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/title_text"
@@ -19,9 +18,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/favorites"
-            app:layout_constraintTop_toTopOf="@id/title_background"
             app:layout_constraintBottom_toBottomOf="@id/title_background"
             app:layout_constraintStart_toStartOf="@id/title_background"
-            />
+            app:layout_constraintTop_toTopOf="@id/title_background" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
