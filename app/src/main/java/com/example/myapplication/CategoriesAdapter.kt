@@ -1,5 +1,7 @@
 package com.example.myapplication
 
+import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +18,16 @@ class CategoriesAdapter(
         fun bind(category: Category) {
             binding.cardTitle.text = category.title
             binding.cardText.text = category.description
+            val drawable = try {
+                Drawable.createFromStream(
+                    binding.cardImage.context.assets.open(category.imageUrl),
+                    null
+                )
+            } catch (e: Exception) {
+                Log.e("CategoriesAdapter", "Error loading image: ${e.message}", e)
+                null
+            }
+            binding.cardImage.setImageDrawable(drawable)
         }
     }
 
