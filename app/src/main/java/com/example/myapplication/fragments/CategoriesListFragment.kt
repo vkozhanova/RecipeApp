@@ -25,13 +25,16 @@ class CategoriesListFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    fun initRecycler() {
         val categories = STUB.getCategories()
         val adapter = CategoriesAdapter(categories)
         binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvCategories.adapter = adapter
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initRecycler()
     }
 
     override fun onDestroyView() {
