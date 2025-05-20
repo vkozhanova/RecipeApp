@@ -32,10 +32,10 @@ class CategoriesListFragment : Fragment() {
         val categories = STUB.getCategories()
         val adapter = CategoriesListAdapter(categories)
         adapter.setOnItemClickListener(object : CategoriesListAdapter.OnItemClickListener {
-           override fun onItemClick(position: Int) {
+            override fun onItemClick(position: Int) {
                 openRecipesByCategoryId()
             }
-        } )
+        })
         binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvCategories.adapter = adapter
     }
