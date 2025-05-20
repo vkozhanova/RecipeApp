@@ -7,9 +7,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemCategoryBinding
 
-class CategoriesAdapter(
+class CategoriesListAdapter(
     private val categories: List<Category>
-) : RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
+) : RecyclerView.Adapter<CategoriesListAdapter.CategoryViewHolder>() {
+
+    interface OnItemClickListener{
+        fun  onItemClick(position: Int)
+    }
+
+   private var itemClickListener: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+       this.itemClickListener = listener
+    }
 
     inner class CategoryViewHolder(
         private val binding: ItemCategoryBinding
@@ -48,6 +58,7 @@ class CategoriesAdapter(
         position: Int
     ) {
         holder.bind(categories[position])
+        holder.itemView.setOnClickListener { itemClickListener?.onItemClick(position) }
     }
 
     override fun getItemCount(): Int = categories.size

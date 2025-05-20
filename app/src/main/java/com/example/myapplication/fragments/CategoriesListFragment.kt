@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.myapplication.CategoriesAdapter
+import com.example.myapplication.CategoriesListAdapter
+import com.example.myapplication.R
 import com.example.myapplication.STUB
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 
@@ -27,9 +30,21 @@ class CategoriesListFragment : Fragment() {
 
     fun initRecycler() {
         val categories = STUB.getCategories()
-        val adapter = CategoriesAdapter(categories)
+        val adapter = CategoriesListAdapter(categories)
+        adapter.setOnItemClickListener(object : CategoriesListAdapter.OnItemClickListener {
+           override fun onItemClick(position: Int) {
+                openRecipesByCategoryId()
+            }
+        } )
         binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvCategories.adapter = adapter
+    }
+
+    private fun openRecipesByCategoryId() {
+        parentFragmentManager.commit {
+            replace<RecipesListFragment>(R.id.mainContainer)
+            addToBackStack(null)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
