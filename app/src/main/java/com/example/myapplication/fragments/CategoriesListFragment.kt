@@ -8,12 +8,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.myapplication.ARG_CATEGORY_ID
+import com.example.myapplication.ARG_CATEGORY_IMAGE_URL
+import com.example.myapplication.ARG_CATEGORY_NAME
 import com.example.myapplication.CategoriesListAdapter
 import com.example.myapplication.R
 import com.example.myapplication.STUB
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 
 class CategoriesListFragment : Fragment() {
+
     private var _binding: FragmentListCategoriesBinding? = null
     private val binding
         get() = _binding
@@ -31,18 +35,30 @@ class CategoriesListFragment : Fragment() {
     fun initRecycler() {
         val categories = STUB.getCategories()
         val adapter = CategoriesListAdapter(categories)
+
         adapter.setOnItemClickListener(object : CategoriesListAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                openRecipesByCategoryId()
+            override fun onItemClick(categoryId: Int) {
+                openRecipesByCategoryId(categoryId)
             }
         })
         binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvCategories.adapter = adapter
     }
 
-    private fun openRecipesByCategoryId() {
+    private fun openRecipesByCategoryId(categoryId: Int) {
+        val category = STUB.getCategories().find { it.id == categoryId }
+
+        val categoryName = category?.title ?: ""
+        val categoryImageUrl = category?.imageUrl ?: ""
+
+        val bundle = Bundle().apply {
+            putInt(ARG_CATEGORY_ID, categoryId)
+            putString(ARG_CATEGORY_NAME, categoryName)
+            putString(ARG_CATEGORY_IMAGE_URL, categoryImageUrl)
+        }
+
         parentFragmentManager.commit {
-            replace<RecipesListFragment>(R.id.mainContainer)
+            replace<RecipesListFragment>(R.id.mainContainer, args = bundle)
             addToBackStack(null)
         }
     }
