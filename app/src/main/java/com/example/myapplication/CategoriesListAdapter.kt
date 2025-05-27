@@ -12,7 +12,7 @@ class CategoriesListAdapter(
 ) : RecyclerView.Adapter<CategoriesListAdapter.CategoryViewHolder>() {
 
     interface OnItemClickListener {
-        fun onItemClick(position: Int)
+        fun onItemClick(categoryId: Int)
     }
 
     private var itemClickListener: OnItemClickListener? = null
@@ -38,6 +38,9 @@ class CategoriesListAdapter(
                 null
             }
             binding.cardImage.setImageDrawable(drawable)
+            binding.root.setOnClickListener {
+                itemClickListener?.onItemClick(category.id)
+            }
         }
     }
 
@@ -58,7 +61,6 @@ class CategoriesListAdapter(
         position: Int
     ) {
         holder.bind(categories[position])
-        holder.itemView.setOnClickListener { itemClickListener?.onItemClick(position) }
     }
 
     override fun getItemCount(): Int = categories.size
