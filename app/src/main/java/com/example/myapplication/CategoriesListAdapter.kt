@@ -1,10 +1,9 @@
 package com.example.myapplication
 
-import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.myapplication.databinding.ItemCategoryBinding
 
 class CategoriesListAdapter(
@@ -28,16 +27,11 @@ class CategoriesListAdapter(
         fun bind(category: Category) {
             binding.cardTitle.text = category.title
             binding.cardText.text = category.description
-            val drawable = try {
-                Drawable.createFromStream(
-                    binding.cardImage.context.assets.open(category.imageUrl),
-                    null
-                )
-            } catch (e: Exception) {
-                Log.e("CategoriesAdapter", "Error loading image: ${e.message}", e)
-                null
-            }
-            binding.cardImage.setImageDrawable(drawable)
+
+            Glide.with(binding.root.context)
+                .load(ASSETS_BASE_PATH + category.imageUrl)
+                .into(binding.cardImage)
+
             binding.root.setOnClickListener {
                 itemClickListener?.onItemClick(category.id)
             }

@@ -5,4 +5,5 @@
     <string name="burgers">бургеры</string>
     <string name="burger_card_description">Рецепты всех популярных видов бургеров</string>
     <string name="recipes">рецепты</string>
+    <string name="recipe">Recipe Fragment</string>
 </resources>
