@@ -30,7 +30,6 @@ class RecipesListAdapter(private val recipes: List<Recipe>) :
             LayoutInflater.from(parent.context),
             parent,
             false
-
         )
         return RecipeViewHolder(binding)
     }
@@ -42,7 +41,7 @@ class RecipesListAdapter(private val recipes: List<Recipe>) :
         val recipe = recipes[position]
         holder.binding.recipeTitle.text = recipe.title
         Glide.with(holder.itemView.context)
-            .load(ASSETS_BASE_PATH + recipe.imageUrl)
+            .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
             .into(holder.binding.recipeImage)
 
         holder.binding.root.setOnClickListener {

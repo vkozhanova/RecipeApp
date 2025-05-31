@@ -5,13 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_gray_color"
+    android:background="@android:color/transparent"
     tools:context=".MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/background_gray_color"
         app:layout_constraintBottom_toTopOf="@id/buttons_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +24,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="@dimen/main_space_16"
+        android:paddingHorizontal="@dimen/main_space_16"
+        android:paddingVertical="0dp"
+       android:background="@android:color/transparent"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+     android:paddingBottom="@dimen/main_space_half_8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -33,18 +39,18 @@
             style="@style/StyleNavButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/button_margin_half_2"
+            android:layout_marginEnd="@dimen/space_half_4"
             android:layout_weight="1"
             android:background="@drawable/button_blue_background_selector"
             android:text="@string/categories"
-            app:backgroundTint="@null" />
+            />
 
         <Button
             android:id="@+id/btnFavorites"
             style="@style/StyleNavButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/button_margin_half_2"
+            android:layout_marginStart="@dimen/space_half_4"
             android:layout_weight="1"
             android:background="@drawable/button_red_background_selector"
             android:text="@string/favorites"
@@ -52,6 +58,6 @@
             app:icon="@drawable/ic_heart_empty"
             app:iconGravity="textEnd"
             app:iconPadding="@dimen/main_space_half_8"
-            app:iconSize="@dimen/icon_size" />
+            app:iconSize="@dimen/height_24" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

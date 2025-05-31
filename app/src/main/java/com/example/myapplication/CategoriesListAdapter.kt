@@ -29,7 +29,7 @@ class CategoriesListAdapter(
             binding.cardText.text = category.description
 
             Glide.with(binding.root.context)
-                .load(ASSETS_BASE_PATH + category.imageUrl)
+                .load("$ASSETS_BASE_PATH${category.imageUrl}")
                 .into(binding.cardImage)
 
             binding.root.setOnClickListener {

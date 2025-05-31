@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray_color"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:clipToPadding="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bcg_categories"
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height"
-        android:layout_marginTop="@dimen/header_margin_top">
+        android:paddingTop="@dimen/height_24">
 
         <ImageView
             android:id="@+id/header_image"
@@ -26,10 +27,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_space_16"
-            android:layout_marginTop="@dimen/title_plate_top"
+            android:layout_marginBottom="@dimen/main_space_16"
             android:text="@string/categories"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -39,8 +40,10 @@
         android:layout_weight="1"
         android:paddingStart="@dimen/main_space_half_8"
         android:paddingEnd="@dimen/main_space_half_8"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        tools:itemCount="6"
-        tools:listitem="@layout/item_category" />
+        android:paddingTop="@dimen/main_space_half_8"
+        android:paddingBottom="0dp"
+    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+    app:spanCount="2"
+    tools:itemCount="6"
+    tools:listitem="@layout/item_category" />
 </LinearLayout>

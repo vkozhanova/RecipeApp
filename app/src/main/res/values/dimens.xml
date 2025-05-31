@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Основные отступы -->
     <dimen name="main_space_16">16dp</dimen>
     <dimen name="main_space_half_8">8dp</dimen>
     <dimen name="space_half_4">4dp</dimen>
-    <dimen name="button_margin_half_2">2dp</dimen>
-    <dimen name="button_min_height">48dp</dimen>
-    <dimen name="button_horizontal_padding">20dp</dimen>
-    <dimen name="icon_size">24dp</dimen>
-    <dimen name="title_plate_top">164dp</dimen>
-    <dimen name="inside_plate_padding">10dp</dimen>
-    <dimen name="header_height">224dp</dimen>
-    <dimen name="header_margin_top">32dp</dimen>
+    <!-- Размеры хедера -->
+    <dimen name="header_height">220dp</dimen>
     <dimen name="title_plate_height">44dp</dimen>
+    <dimen name="inside_plate_padding">12dp</dimen>
+    <!-- Размеры карточек -->
     <dimen name="card_text_height">90dp</dimen>
     <dimen name="card_image_height">130dp</dimen>
+    <!-- Иконки и кнопки -->
+    <dimen name="height_24">24dp</dimen>
+    <dimen name="button_min_height">48dp</dimen>
+    <dimen name="button_horizontal_padding">20dp</dimen>
+
+    <dimen name="button_margin_half_2">2dp</dimen>
+    <dimen name="title_plate_top">164dp</dimen>
+    <dimen name="header_margin_top">32dp</dimen>
     <dimen name="card_height">220dp</dimen>
 </resources>

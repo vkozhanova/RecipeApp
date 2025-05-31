@@ -2,13 +2,12 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/CardStyle"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/space_half_4"
+    android:layout_marginBottom="@dimen/main_space_16"
     app:cardCornerRadius="@dimen/main_space_half_8"
-    app:cardElevation="@dimen/space_half_4"
-    app:cardPreventCornerOverlap="false"
-    app:cardUseCompatPadding="true">
+    app:cardElevation="2dp"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"

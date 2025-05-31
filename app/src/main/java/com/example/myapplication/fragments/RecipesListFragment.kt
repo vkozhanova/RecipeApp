@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,6 +43,14 @@ class RecipesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bcgRecipes) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
+            insets
+        }
+
         arguments?.let { bundle ->
             categoryId = bundle.getInt(ARG_CATEGORY_ID)
             categoryName = bundle.getString(ARG_CATEGORY_NAME)
@@ -49,7 +60,7 @@ class RecipesListFragment : Fragment() {
         categoryName?.let { binding.titleText.text = it }
         categoryImageUrl?.let { fileName ->
             Glide.with(requireContext())
-                .load(ASSETS_BASE_PATH + fileName)
+                .load("$ASSETS_BASE_PATH${fileName}")
                 .into(binding.headerImage)
         }
         val recipes = STUB.getRecipesByCategoryId(categoryId ?: 0)
