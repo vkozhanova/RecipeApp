@@ -43,9 +43,9 @@ class RecipesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.bcgRecipes) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            binding.bcgRecipes.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = systemBars.top
             }
             insets
@@ -72,6 +72,7 @@ class RecipesListFragment : Fragment() {
         })
         binding.rvRecipes.layoutManager = LinearLayoutManager(requireContext())
         binding.rvRecipes.adapter = adapter
+
     }
 
     fun openRecipeByRecipeId(recipeId: Int) {

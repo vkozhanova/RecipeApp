@@ -5,6 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
+import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.view.updateLayoutParams
+
 import com.example.myapplication.databinding.ItemRecipeBinding
 
 class RecipesListAdapter(private val recipes: List<Recipe>) :
@@ -46,6 +49,17 @@ class RecipesListAdapter(private val recipes: List<Recipe>) :
 
         holder.binding.root.setOnClickListener {
             itemClickListener?.onItemClick(recipe.id)
+        }
+
+        val resources = holder.itemView.context.resources
+        val bottomMargin = if (position == itemCount - 1) {
+            resources.getDimensionPixelSize(R.dimen.main_space_16)
+        } else {
+            0
+        }
+
+        holder.itemView.updateLayoutParams<MarginLayoutParams> {
+            this.bottomMargin = bottomMargin
         }
     }
 

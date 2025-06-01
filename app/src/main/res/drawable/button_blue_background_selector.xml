@@ -4,12 +4,22 @@
         <shape android:shape="rectangle">
             <solid android:color="@color/bt_blue_pressed_color" />
             <corners android:radius="@dimen/main_space_half_8" />
+            <padding
+                android:left="0dp"
+                android:top="0dp"
+                android:right="0dp"
+                android:bottom="0dp" />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@color/bt_blue_default_color" />
             <corners android:radius="@dimen/main_space_half_8" />
+            <padding
+                android:left="0dp"
+                android:top="0dp"
+                android:right="0dp"
+                android:bottom="0dp" />
         </shape>
     </item>
 </selector>

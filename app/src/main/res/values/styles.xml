@@ -2,12 +2,16 @@
 <resources>
 
     <style name="StyleNavButton" parent="Widget.Material3.Button">
-        <item name="android:minHeight">@dimen/button_min_height</item>
-        <item name="android:paddingVertical">@dimen/main_space_half_8</item>
-        <item name="android:paddingHorizontal">@dimen/button_horizontal_padding</item>
         <item name="android:textAppearance">@style/StyleTitle14</item>
         <item name="cornerRadius">@dimen/main_space_half_8</item>
+        <item name="android:background">@null</item>
 
+        <item name="backgroundInsetTop">0dp</item>
+        <item name="backgroundInsetBottom">0dp</item>
+        <item name="backgroundInsetStart">0dp</item>
+        <item name="backgroundInsetEnd">0dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="elevation">0dp</item>
     </style>
 
     <style name="StyleTitle14" parent="android:TextAppearance.Material.Widget.Button">
@@ -55,11 +59,11 @@
     <style name="CardStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-<!--        <item name="android:layout_width">@dimen/header_height</item>-->
-<!--        <item name="android:layout_height">@dimen/card_height</item>-->
         <item name="android:layout_margin">@dimen/main_space_half_8</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:layout_marginTop">8dp</item>
     </style>
 </resources>
