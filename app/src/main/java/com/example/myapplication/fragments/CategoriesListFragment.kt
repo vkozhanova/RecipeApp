@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -15,9 +17,9 @@ import com.example.myapplication.CategoriesListAdapter
 import com.example.myapplication.R
 import com.example.myapplication.STUB
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
+import androidx.core.view.updateLayoutParams
 
 class CategoriesListFragment : Fragment() {
-
     private var _binding: FragmentListCategoriesBinding? = null
     private val binding
         get() = _binding
@@ -65,11 +67,19 @@ class CategoriesListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecycler()
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.bcgCategories.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
+            insets
+        }
+            initRecycler()
+        }
+
+        override fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
+        }
     }
-}

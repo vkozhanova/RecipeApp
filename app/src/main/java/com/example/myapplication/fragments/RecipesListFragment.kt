@@ -4,11 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.myapplication.ARG_CATEGORY_ID
 import com.example.myapplication.ARG_CATEGORY_IMAGE_URL
 import com.example.myapplication.ARG_CATEGORY_NAME
+import com.example.myapplication.ARG_RECIPE_ID
+import com.example.myapplication.ASSETS_BASE_PATH
+import com.example.myapplication.R
+import com.example.myapplication.STUB
 import com.example.myapplication.databinding.FragmentListRecipesBinding
+import com.example.myapplication.RecipesListAdapter
 
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentListRecipesBinding? = null
@@ -32,10 +43,47 @@ class RecipesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.bcgRecipes.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
+            insets
+        }
+
         arguments?.let { bundle ->
             categoryId = bundle.getInt(ARG_CATEGORY_ID)
             categoryName = bundle.getString(ARG_CATEGORY_NAME)
             categoryImageUrl = bundle.getString(ARG_CATEGORY_IMAGE_URL)
+        }
+
+        categoryName?.let { binding.titleText.text = it }
+        categoryImageUrl?.let { fileName ->
+            Glide.with(requireContext())
+                .load("$ASSETS_BASE_PATH${fileName}")
+                .into(binding.headerImage)
+        }
+        val recipes = STUB.getRecipesByCategoryId(categoryId ?: 0)
+        val adapter = RecipesListAdapter(recipes)
+        adapter.setOnItemClickListener(object : RecipesListAdapter.OnItemClickListener {
+            override fun onItemClick(recipeId: Int) {
+                openRecipeByRecipeId(recipeId)
+            }
+        })
+        binding.rvRecipes.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvRecipes.adapter = adapter
+
+    }
+
+    fun openRecipeByRecipeId(recipeId: Int) {
+        val fragment = RecipeFragment().apply {
+            arguments = Bundle().apply {
+                putInt(ARG_RECIPE_ID, recipeId)
+            }
+        }
+        parentFragmentManager.commit {
+            replace(R.id.mainContainer, fragment)
+            addToBackStack(null)
         }
     }
 
