@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.myapplication.ARG_CATEGORY_ID
@@ -19,6 +20,7 @@ import com.example.myapplication.R
 import com.example.myapplication.STUB
 import com.example.myapplication.databinding.FragmentListRecipesBinding
 import com.example.myapplication.RecipesListAdapter
+import androidx.fragment.app.replace
 
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentListRecipesBinding? = null
@@ -59,7 +61,7 @@ class RecipesListFragment : Fragment() {
         categoryName?.let { binding.titleText.text = it }
         categoryImageUrl?.let { fileName ->
             Glide.with(requireContext())
-                .load("$ASSETS_BASE_PATH${fileName}")
+                .load("$ASSETS_BASE_PATH$fileName")
                 .into(binding.headerImage)
         }
         val recipes = STUB.getRecipesByCategoryId(categoryId ?: 0)
@@ -80,12 +82,11 @@ class RecipesListFragment : Fragment() {
             val bundle = Bundle().apply {
                 putParcelable(ARG_RECIPE, it)
             }
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.mainContainer, RecipeFragment().apply {
-                    arguments = bundle
-                })
-                .addToBackStack(null)
-                .commit()
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<RecipeFragment>(R.id.mainContainer, args = bundle)
+                addToBackStack(null)
+            }
         }
     }
 
