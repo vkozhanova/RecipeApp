@@ -4,10 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.core.view.updateLayoutParams
-
 import com.example.myapplication.databinding.ItemRecipeBinding
 
 class RecipesListAdapter(private val recipes: List<Recipe>) :

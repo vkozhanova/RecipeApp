@@ -1,11 +1,13 @@
 package com.example.myapplication.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.myapplication.ARG_RECIPE_ID
+import com.example.myapplication.ARG_RECIPE
+import com.example.myapplication.Recipe
 import com.example.myapplication.databinding.FragmentRecipeBinding
 
 class RecipeFragment : Fragment() {
@@ -13,8 +15,6 @@ class RecipeFragment : Fragment() {
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentRecipeBinding must not be null")
-
-    private var recipeId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,8 +28,18 @@ class RecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recipeId = arguments?.getInt(ARG_RECIPE_ID)
-        binding.titleText.text = "fragment recipe"
+        val recipe = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getParcelable(ARG_RECIPE, Recipe::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            (arguments?.getParcelable(ARG_RECIPE))
+        }
+
+        recipe?.let {
+            binding.titleText.text = it.title
+        } ?: run {
+            binding.titleText.text = "Recipe not found"
+        }
     }
 
     override fun onDestroyView() {
@@ -37,9 +47,3 @@ class RecipeFragment : Fragment() {
         _binding = null
     }
 }
-
-
-
-
-
-

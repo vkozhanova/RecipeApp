@@ -14,12 +14,13 @@ import com.bumptech.glide.Glide
 import com.example.myapplication.ARG_CATEGORY_ID
 import com.example.myapplication.ARG_CATEGORY_IMAGE_URL
 import com.example.myapplication.ARG_CATEGORY_NAME
-import com.example.myapplication.ARG_RECIPE_ID
+import com.example.myapplication.ARG_RECIPE
 import com.example.myapplication.ASSETS_BASE_PATH
 import com.example.myapplication.R
 import com.example.myapplication.STUB
 import com.example.myapplication.databinding.FragmentListRecipesBinding
 import com.example.myapplication.RecipesListAdapter
+import androidx.fragment.app.replace
 
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentListRecipesBinding? = null
@@ -60,7 +61,7 @@ class RecipesListFragment : Fragment() {
         categoryName?.let { binding.titleText.text = it }
         categoryImageUrl?.let { fileName ->
             Glide.with(requireContext())
-                .load("$ASSETS_BASE_PATH${fileName}")
+                .load("$ASSETS_BASE_PATH$fileName")
                 .into(binding.headerImage)
         }
         val recipes = STUB.getRecipesByCategoryId(categoryId ?: 0)
@@ -76,14 +77,16 @@ class RecipesListFragment : Fragment() {
     }
 
     fun openRecipeByRecipeId(recipeId: Int) {
-        val fragment = RecipeFragment().apply {
-            arguments = Bundle().apply {
-                putInt(ARG_RECIPE_ID, recipeId)
+        val recipe = STUB.getRecipeById(recipeId)
+        recipe?.let {
+            val bundle = Bundle().apply {
+                putParcelable(ARG_RECIPE, it)
             }
-        }
-        parentFragmentManager.commit {
-            replace(R.id.mainContainer, fragment)
-            addToBackStack(null)
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<RecipeFragment>(R.id.mainContainer, args = bundle)
+                addToBackStack(null)
+            }
         }
     }
 
@@ -92,4 +95,3 @@ class RecipesListFragment : Fragment() {
         _binding = null
     }
 }
-
