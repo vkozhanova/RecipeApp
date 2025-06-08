@@ -4,6 +4,7 @@
     <dimen name="main_space_16">16dp</dimen>
     <dimen name="main_space_half_8">8dp</dimen>
     <dimen name="space_half_4">4dp</dimen>
+    <dimen name="end_of_scroll">6dp</dimen>
     <!-- Размеры хедера -->
     <dimen name="header_height">224dp</dimen>
     <dimen name="title_plate_height">44dp</dimen>

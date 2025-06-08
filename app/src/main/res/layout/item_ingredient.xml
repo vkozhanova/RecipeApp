@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/main_space_16"
+    android:paddingTop="@dimen/main_space_half_8"
+    android:paddingEnd="@dimen/main_space_16"
+    android:paddingBottom="@dimen/main_space_half_8"
+    >
+
+    <TextView
+        android:id="@+id/tv_ingredient_name"
+        style="@style/IngredientText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_ingredient_amount"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Ингредиент" />
+
+    <TextView
+        android:id="@+id/tv_ingredient_amount"
+        style="@style/IngredientText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="100 г" />
+</androidx.constraintlayout.widget.ConstraintLayout>

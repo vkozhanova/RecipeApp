@@ -6,4 +6,6 @@
     <string name="burger_card_description">Рецепты всех популярных видов бургеров</string>
     <string name="recipes">рецепты</string>
     <string name="recipe">Recipe Fragment</string>
+    <string name="ingredients">ингредиенты</string>
+    <string name="method">Способ приготовления</string>
 </resources>

@@ -12,7 +12,6 @@
         android:id="@+id/bcg_categories"
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height"
-
         android:background="#00FF00">
 
         <ImageView
