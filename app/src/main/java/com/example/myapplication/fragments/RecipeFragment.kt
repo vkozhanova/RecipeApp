@@ -1,5 +1,6 @@
 package com.example.myapplication.fragments
 
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -71,11 +72,16 @@ class RecipeFragment : Fragment() {
     }
 
     private fun initRecycler(recipe: Recipe) {
+        val spacingInPx = resources.getDimensionPixelSize(R.dimen.divider_padding)
+
+        binding.rvIngredients.addItemDecoration(EdgeSpacingItemDecoration(spacingInPx))
+        binding.rvMethod.addItemDecoration(EdgeSpacingItemDecoration(spacingInPx))
+
         val divider = MaterialDividerItemDecoration(requireContext(), RecyclerView.VERTICAL).apply {
             isLastItemDecorated = false
-            dividerInsetStart = resources.getDimensionPixelSize(R.dimen.main_space_16)
-            dividerInsetEnd = resources.getDimensionPixelSize(R.dimen.main_space_16)
-            dividerColor = resources.getColor(R.color.divider_light_gray, null)
+            dividerInsetStart = resources.getDimensionPixelSize(R.dimen.divider_padding)
+            dividerInsetEnd = resources.getDimensionPixelSize(R.dimen.divider_padding)
+            dividerColor = resources.getColor(R.color.divider_light_gray_color, null)
         }
 
         binding.rvIngredients.apply {
@@ -96,5 +102,35 @@ class RecipeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+class EdgeSpacingItemDecoration(
+    private val spacing: Int,
+    private val orientation: Int = RecyclerView.VERTICAL
+) : RecyclerView.ItemDecoration() {
+
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
+        val position = parent.getChildAdapterPosition(view)
+        if (position == 0) {
+            if (orientation == RecyclerView.VERTICAL) {
+                outRect.top = spacing
+            } else {
+                outRect.left = spacing
+            }
+        }
+
+        if (position == state.itemCount - 1) {
+            if (orientation == RecyclerView.VERTICAL) {
+                outRect.bottom = spacing
+            } else {
+                outRect.right = spacing
+            }
+        }
     }
 }

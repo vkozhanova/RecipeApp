@@ -12,12 +12,13 @@
         android:id="@+id/bcg_categories"
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height"
-        android:background="#00FF00">
+        android:background="@color/background_header_mock_color">
 
         <ImageView
             android:id="@+id/header_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:contentDescription="@null"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
