@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/main_space_16"
     app:cardCornerRadius="@dimen/main_space_half_8"
-    app:cardElevation="2dp">
+    app:cardElevation="@dimen/button_margin_half_2">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,6 +17,7 @@
             android:id="@+id/card_image"
             android:layout_width="match_parent"
             android:layout_height="@dimen/card_image_height"
+            android:contentDescription="@string/category_picture_description"
             android:scaleType="centerCrop"
             android:src="@drawable/burger_card" />
 
@@ -38,7 +39,7 @@
                 style="@style/CardText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/burger_card_description" />
+                android:text="@string/burger_card" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

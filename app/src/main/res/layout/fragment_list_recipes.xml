@@ -17,6 +17,7 @@
             android:id="@+id/header_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:contentDescription="@string/burgers_category_description"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +36,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvRecipes"
+        android:id="@+id/rv_recipes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -46,5 +47,5 @@
         android:paddingBottom="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="8"
-        tools:listitem="@layout/item_recipe"/>
+        tools:listitem="@layout/item_recipe" />
 </LinearLayout>

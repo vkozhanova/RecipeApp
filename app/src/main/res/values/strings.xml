@@ -3,7 +3,15 @@
     <string name="categories">категории</string>
     <string name="favorites">избранное</string>
     <string name="burgers">бургеры</string>
-    <string name="burger_card_description">Рецепты всех популярных видов бургеров</string>
+    <string name="burger_card">Рецепты всех популярных видов бургеров</string>
     <string name="recipes">рецепты</string>
     <string name="recipe">Recipe Fragment</string>
+    <string name="ingredients">ингредиенты</string>
+    <string name="method">Способ приготовления</string>
+    <string name="step_mock">1. Разогрейте сковороду и обжаривайте фарш до готовности.</string>
+    <string name="burgers_category_description">Picture of Burgers category</string>
+    <string name="burgers_recipe_description">Picture of Burgers recipe</string>
+    <string name="category_picture_description">Picture of category</string>
+    <string name="header_category">Picture of categories header</string>
+    <string name="dish_picture">Picture of dish</string>
 </resources>
