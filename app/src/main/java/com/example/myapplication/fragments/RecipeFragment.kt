@@ -1,6 +1,5 @@
 package com.example.myapplication.fragments
 
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -72,10 +71,6 @@ class RecipeFragment : Fragment() {
     }
 
     private fun initRecycler(recipe: Recipe) {
-        val spacingInPx = resources.getDimensionPixelSize(R.dimen.divider_padding)
-
-        binding.rvIngredients.addItemDecoration(EdgeSpacingItemDecoration(spacingInPx))
-        binding.rvMethod.addItemDecoration(EdgeSpacingItemDecoration(spacingInPx))
 
         val divider = MaterialDividerItemDecoration(requireContext(), RecyclerView.VERTICAL).apply {
             isLastItemDecorated = false
@@ -102,35 +97,5 @@ class RecipeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-}
-
-class EdgeSpacingItemDecoration(
-    private val spacing: Int,
-    private val orientation: Int = RecyclerView.VERTICAL
-) : RecyclerView.ItemDecoration() {
-
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
-        val position = parent.getChildAdapterPosition(view)
-        if (position == 0) {
-            if (orientation == RecyclerView.VERTICAL) {
-                outRect.top = spacing
-            } else {
-                outRect.left = spacing
-            }
-        }
-
-        if (position == state.itemCount - 1) {
-            if (orientation == RecyclerView.VERTICAL) {
-                outRect.bottom = spacing
-            } else {
-                outRect.right = spacing
-            }
-        }
     }
 }

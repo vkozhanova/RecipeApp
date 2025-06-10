@@ -21,6 +21,7 @@
             android:id="@+id/recipe_image"
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:contentDescription="@string/dish_picture"
             android:scaleType="centerCrop" />
 
         <TextView
