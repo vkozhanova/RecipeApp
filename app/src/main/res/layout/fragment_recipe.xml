@@ -44,24 +44,53 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/main_space_half_8">
+            android:paddingStart="@dimen/main_space_16"
+            android:paddingEnd="@dimen/main_space_16"
+            android:paddingTop="@dimen/main_space_16">
 
             <TextView
                 android:id="@+id/tv_ingredients_title"
-                style="@style/CategoryTitleText"
+                style="@style/IngredientsTitleText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/main_space_half_8"
-                android:gravity="start"
-                android:text="@string/ingredients" />
+                android:text="@string/ingredients"
+                android:layout_marginBottom="@dimen/end_of_scroll"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/end_of_scroll"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/PortionsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/portions" />
+
+                <TextView
+                    android:id="@+id/tv_portions_value"
+                    style="@style/PortionsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/end_of_scroll"
+                     />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/seekbar"
+                android:max="4"
+                android:progress="0"
+                />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_ingredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/main_space_half_8"
-                android:layout_marginEnd="@dimen/main_space_half_8"
-                android:layout_marginBottom="@dimen/main_space_half_8"
+                android:layout_marginBottom="@dimen/main_space_16"
+                android:layout_marginTop="@dimen/main_space_16"
                 android:paddingVertical="@dimen/space_half_4"
                 android:background="@drawable/recipe_bcg"
                 android:nestedScrollingEnabled="false"
@@ -69,10 +98,9 @@
 
             <TextView
                 android:id="@+id/tv_steps_title"
-                style="@style/CategoryTitleText"
+                style="@style/IngredientsTitleText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/main_space_half_8"
                 android:gravity="start"
                 android:text="@string/method" />
 
@@ -80,8 +108,7 @@
                 android:id="@+id/rv_method"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/main_space_half_8"
-                android:layout_marginEnd="@dimen/main_space_half_8"
+                android:layout_marginTop="@dimen/main_space_16"
                 android:layout_marginBottom="@dimen/end_of_scroll"
                 android:paddingVertical="@dimen/space_half_4"
                 android:background="@drawable/recipe_bcg"

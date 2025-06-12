@@ -45,7 +45,6 @@
         <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
         <item name="android:paddingRight">@dimen/main_space_half_8</item>
         <item name="android:paddingBottom">@dimen/main_space_half_8</item>
-        <item name="textAllCaps">true</item>
     </style>
 
     <style name="CardText">
@@ -79,4 +78,25 @@
         <item name="android:fontFamily">@font/montserrat_medium</item>
     </style>
 
+    <style name="PortionsText">
+        <item name="android:textColor">@color/card_text_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
+        <item name="android:lineHeight">@dimen/main_space_16</item>
+        <item name="android:lineSpacingExtra">0dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <style name="IngredientsTitleText" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@color/title_purple_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:lineSpacingExtra">0dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
+    </style>
 </resources>

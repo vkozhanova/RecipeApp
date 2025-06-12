@@ -22,4 +22,7 @@
     <dimen name="title_plate_top">164dp</dimen>
     <dimen name="header_margin_top">32dp</dimen>
     <dimen name="card_height">220dp</dimen>
+    <dimen name="seekbar">30dp</dimen>
+    <dimen name="item_recipe_height">100dp</dimen>
+
 </resources>
