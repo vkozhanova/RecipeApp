@@ -74,14 +74,14 @@ class RecipeFragment : Fragment() {
     private fun initRecycler(recipe: Recipe) {
         val portionValue = binding.tvPortionsValue
         val seekbar = binding.seekbar
-        portionValue.text = (seekbar.progress + 1).toString()
+        portionValue.text = seekbar.progress.toString()
 
         val ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
-        ingredientsAdapter.updateIngredients(seekbar.progress + 1)
+        ingredientsAdapter.updateIngredients(seekbar.progress)
 
         seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val portion = if (progress == 0) 1 else progress + 1
+                val portion = progress
                 portionValue.text = portion.toString()
                 ingredientsAdapter.updateIngredients(portion)
             }
