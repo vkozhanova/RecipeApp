@@ -15,13 +15,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/main_space_half_8">
+        >
 
         <ImageView
             android:id="@+id/recipe_image"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:contentDescription="@string/dish_picture"
+            android:layout_height="@dimen/item_recipe_height"
+            android:contentDescription="@string/dish_picture_description"
             android:scaleType="centerCrop" />
 
         <TextView
