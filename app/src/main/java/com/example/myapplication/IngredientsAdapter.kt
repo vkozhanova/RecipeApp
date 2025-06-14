@@ -21,18 +21,14 @@ class IngredientsAdapter(private val ingredients: List<Ingredient>) :
         val ingredient = ingredients[position]
         holder.binding.tvIngredientName.text = ingredient.description
 
-        val quantity = try {
+        val formattedQuantity = try {
             BigDecimal(ingredient.quantity.replace(",", "."))
+                .multiply(BigDecimal(multiplier))
+                .setScale(1, RoundingMode.HALF_UP)
+                .stripTrailingZeros()
+                .toPlainString()
         } catch (_: NumberFormatException) {
-            BigDecimal.ZERO
-        }
-        val totalQuantity = quantity.multiply(BigDecimal(multiplier))
-
-        val formattedQuantity = if (totalQuantity.scale() <= 0 || totalQuantity.setScale(1,
-                RoundingMode.HALF_UP).stripTrailingZeros().scale() <= 0) {
-            totalQuantity.toInt().toString()
-        } else {
-            totalQuantity.setScale(1, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
+            ingredient.quantity
         }
         holder.binding.tvIngredientAmount.text =
             "$formattedQuantity ${ingredient.unitOfMeasure}"
