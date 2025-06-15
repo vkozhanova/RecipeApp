@@ -3,7 +3,7 @@
     <color name="black_color">#FF000000</color>
     <color name="white_color">#FFFFFFFF</color>
     <color name="bt_blue_default_color">#525DC0</color>
-    <color name="bt_blue_pressed_color">#7079CC</color>
+    <color name="seekbar_blue_color">#A1A9F9</color>
     <color name="bt_red_default_color">#E13E3E</color>
     <color name="bt_red_pressed_color">#E35B5B</color>
     <color name="background_gray_color">#F4FAFF</color>
