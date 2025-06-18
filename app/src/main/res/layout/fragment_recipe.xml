@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray_color"
@@ -28,6 +29,21 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/icon_favorites"
+                android:layout_width="@dimen/favorites_icon"
+                android:layout_height="@dimen/favorites_icon"
+                android:contentDescription="@string/favorites_icon_description"
+                android:src="@drawable/ic_heart_empty"
+                tools:src="@drawable/ic_heart"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="fitCenter"
+                android:padding="0dp"
+                android:layout_marginTop="@dimen/main_space_16"
+                android:layout_marginEnd="@dimen/main_space_16"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
             <TextView
                 android:id="@+id/title_text"

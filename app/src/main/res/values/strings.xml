@@ -15,4 +15,5 @@
     <string name="category_picture_description">Picture of category</string>
     <string name="header_category_description">Picture of categories header</string>
     <string name="dish_picture_description">Picture of dish</string>
+    <string name="favorites_icon_description">Favorites icon</string>
 </resources>

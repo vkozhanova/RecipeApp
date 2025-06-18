@@ -23,6 +23,7 @@ import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
 class RecipeFragment : Fragment() {
+    private var isFavorite: Boolean = false
     private var _binding: FragmentRecipeBinding? = null
     private val binding
         get() = _binding
@@ -47,7 +48,6 @@ class RecipeFragment : Fragment() {
             }
             insets
         }
-
         getRecipeFromArguments()?.let { recipe ->
             initUI(recipe)
             initRecycler(recipe)
@@ -69,7 +69,22 @@ class RecipeFragment : Fragment() {
             .into(binding.headerImage)
 
         binding.titleText.text = recipe.title
+
+        updateFavoriteIcon(isFavorite)
+        binding.iconFavorites.setOnClickListener {
+            isFavorite = !isFavorite
+            updateFavoriteIcon(isFavorite)
+        }
     }
+
+    private fun updateFavoriteIcon(isFavorite: Boolean) {
+        val iconRes = if (isFavorite){
+            R.drawable.ic_heart
+    }else {
+        R.drawable.ic_heart_empty
+    }
+    binding.iconFavorites.setImageResource(iconRes)
+}
 
     private fun initRecycler(recipe: Recipe) {
         val portionValue = binding.tvPortionsValue
