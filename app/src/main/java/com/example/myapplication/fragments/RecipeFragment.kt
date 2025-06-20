@@ -1,5 +1,6 @@
 package com.example.myapplication.fragments
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,19 +16,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.ARG_RECIPE
 import com.example.myapplication.ASSETS_BASE_PATH
+import com.example.myapplication.FAVORITES_KEY
 import com.example.myapplication.IngredientsAdapter
 import com.example.myapplication.MethodAdapter
+import com.example.myapplication.PREFS_NAME
 import com.example.myapplication.R
 import com.example.myapplication.Recipe
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
 class RecipeFragment : Fragment() {
-    private var isFavorite: Boolean = false
+
     private var _binding: FragmentRecipeBinding? = null
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentRecipeBinding must not be null")
+
+    private var currentRecipe: Recipe? = null
+    private var isFavorite: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,7 +54,9 @@ class RecipeFragment : Fragment() {
             }
             insets
         }
-        getRecipeFromArguments()?.let { recipe ->
+        currentRecipe = getRecipeFromArguments()
+        currentRecipe?.let { recipe ->
+            isFavorite = getFavorites().contains(recipe.id.toString())
             initUI(recipe)
             initRecycler(recipe)
         }
@@ -74,17 +82,43 @@ class RecipeFragment : Fragment() {
         binding.iconFavorites.setOnClickListener {
             isFavorite = !isFavorite
             updateFavoriteIcon(isFavorite)
+
+            currentRecipe?.id?.toString().let { recipeId ->
+                val favorites = getFavorites().toMutableSet()
+                if (isFavorite) {
+                    favorites.add(recipeId.toString())
+                } else {
+                    favorites.remove(recipeId)
+                }
+                saveFavorites(favorites)
+            }
         }
     }
 
     private fun updateFavoriteIcon(isFavorite: Boolean) {
-        val iconRes = if (isFavorite){
+        val iconRes = if (isFavorite) {
             R.drawable.ic_heart
-    }else {
-        R.drawable.ic_heart_empty
+        } else {
+            R.drawable.ic_heart_empty
+        }
+        binding.iconFavorites.setImageResource(iconRes)
     }
-    binding.iconFavorites.setImageResource(iconRes)
-}
+
+    fun saveFavorites(recipesIds: Set<String>) {
+        val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+        sharedPrefs.edit()
+            .putStringSet(FAVORITES_KEY, recipesIds)
+            .apply()
+    }
+
+    fun getFavorites(): MutableSet<String> {
+        val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+        val favorites = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
+
+        return HashSet(favorites)
+    }
 
     private fun initRecycler(recipe: Recipe) {
         val portionValue = binding.tvPortionsValue
