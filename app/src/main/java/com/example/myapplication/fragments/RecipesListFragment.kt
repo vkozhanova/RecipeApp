@@ -8,19 +8,16 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.myapplication.ARG_CATEGORY_ID
 import com.example.myapplication.ARG_CATEGORY_IMAGE_URL
 import com.example.myapplication.ARG_CATEGORY_NAME
-import com.example.myapplication.ARG_RECIPE
 import com.example.myapplication.ASSETS_BASE_PATH
-import com.example.myapplication.R
 import com.example.myapplication.STUB
 import com.example.myapplication.databinding.FragmentListRecipesBinding
 import com.example.myapplication.RecipesListAdapter
-import androidx.fragment.app.replace
+import com.example.myapplication.NavigationUtils
 
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentListRecipesBinding? = null
@@ -65,29 +62,15 @@ class RecipesListFragment : Fragment() {
                 .into(binding.headerImage)
         }
         val recipes = STUB.getRecipesByCategoryId(categoryId ?: 0)
-        val adapter = RecipesListAdapter(recipes)
-        adapter.setOnItemClickListener(object : RecipesListAdapter.OnItemClickListener {
-            override fun onItemClick(recipeId: Int) {
-                openRecipeByRecipeId(recipeId)
+        val adapter = RecipesListAdapter(
+            recipes = recipes,
+            onItemClick = { recipe ->
+                NavigationUtils.openRecipeByRecipeId(this@RecipesListFragment, recipe.id)
             }
-        })
+        )
+
         binding.rvRecipes.layoutManager = LinearLayoutManager(requireContext())
         binding.rvRecipes.adapter = adapter
-
-    }
-
-    fun openRecipeByRecipeId(recipeId: Int) {
-        val recipe = STUB.getRecipeById(recipeId)
-        recipe?.let {
-            val bundle = Bundle().apply {
-                putParcelable(ARG_RECIPE, it)
-            }
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<RecipeFragment>(R.id.mainContainer, args = bundle)
-                addToBackStack(null)
-            }
-        }
     }
 
     override fun onDestroyView() {

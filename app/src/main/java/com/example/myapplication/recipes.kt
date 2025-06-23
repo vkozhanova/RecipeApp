@@ -269,6 +269,12 @@ object STUB {
     }
 
     fun getRecipeById(id: Int): Recipe? {
-        return burgerRecipes.find  { it.id == id } ?: burgerRecipes[0]
+        return burgerRecipes.find { it.id == id } ?: burgerRecipes[0]
+    }
+
+    fun getRecipesByIds(ids: Set<Int>): List<Recipe> {
+        return burgerRecipes
+            .filter { it.id in ids }
+            .map { it.copy(isFavorite = true) }
     }
 }

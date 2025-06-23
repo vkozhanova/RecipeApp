@@ -16,4 +16,7 @@
     <string name="header_category_description">Picture of categories header</string>
     <string name="dish_picture_description">Picture of dish</string>
     <string name="favorites_icon_description">Favorites icon</string>
+    <string name="header_favorites_description">Picture of favorites header</string>
+    <string name="empty_favorites_message">Вы еще не добавили ни одного рецепта в избранное</string>
+    <string name="favorites_title">избранное</string>
 </resources>
