@@ -61,9 +61,8 @@ class FavoritesFragment : Fragment() {
 
     private fun initRecycler() {
         adapter = RecipesListAdapter(
-            favoriteRecipes,
-            onItemClick = { recipe -> NavigationUtils.openRecipeByRecipeId(this, recipe.id) },
-            onFavoriteClick = { recipe -> toggleFavorite(recipe) }
+            recipes = favoriteRecipes,
+            onItemClick = { recipe -> NavigationUtils.openRecipeByRecipeId(this@FavoritesFragment, recipe.id) },
         )
 
         binding.rvFavorites.apply {
@@ -88,18 +87,6 @@ class FavoritesFragment : Fragment() {
         }
     }
 
-    private fun toggleFavorite(recipe: Recipe) {
-        val favorites = getFavorites().toMutableSet()
-        val id = recipe.id
-        if (favorites.contains(id)) {
-            favorites.remove(id)
-        } else {
-            favorites.add(id)
-        }
-        saveFavorites(favorites)
-        loadFavoritesRecipes()
-    }
-
     private fun showEmptyState() {
         binding.rvFavorites.visibility = View.GONE
         binding.emptyStateText.text = getString(R.string.empty_favorites_message)
@@ -113,6 +100,7 @@ class FavoritesFragment : Fragment() {
 
     fun saveFavorites(recipesIds: Set<Int>) {
         val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
         sharedPrefs.edit()
             .putStringSet(FAVORITES_KEY, recipesIds.map { it.toString() }.toSet())
             .apply()
