@@ -8,20 +8,36 @@ import android.view.ViewGroup.MarginLayoutParams
 import androidx.core.view.updateLayoutParams
 import com.example.myapplication.databinding.ItemRecipeBinding
 
-class RecipesListAdapter(private val recipes: List<Recipe>) :
-    RecyclerView.Adapter<RecipesListAdapter.RecipeViewHolder>() {
-    interface OnItemClickListener {
-        fun onItemClick(recipeId: Int)
-    }
+class RecipesListAdapter(
+    private var recipes: List<Recipe>,
+    private val onItemClick: (Recipe) -> Unit,
 
-    private var itemClickListener: OnItemClickListener? = null
-
-    fun setOnItemClickListener(listener: OnItemClickListener) {
-        this.itemClickListener = listener
-    }
+) : RecyclerView.Adapter<RecipesListAdapter.RecipeViewHolder>() {
 
     inner class RecipeViewHolder(val binding: ItemRecipeBinding) :
-        RecyclerView.ViewHolder(binding.root)
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(recipe: Recipe) {
+            binding.recipeTitle.text = recipe.title
+
+            Glide.with(binding.root.context)
+                .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
+                .into(binding.recipeImage)
+
+            binding.root.setOnClickListener {
+                onItemClick(recipe)
+            }
+
+            val bottomMargin = if (adapterPosition == itemCount - 1) {
+                binding.root.context.resources.getDimensionPixelSize(R.dimen.main_space_16)
+            } else {
+                0
+            }
+            binding.root.updateLayoutParams<MarginLayoutParams> {
+                this.bottomMargin = bottomMargin
+            }
+        }
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -39,27 +55,13 @@ class RecipesListAdapter(private val recipes: List<Recipe>) :
         holder: RecipeViewHolder,
         position: Int
     ) {
-        val recipe = recipes[position]
-        holder.binding.recipeTitle.text = recipe.title
-        Glide.with(holder.itemView.context)
-            .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
-            .into(holder.binding.recipeImage)
-
-        holder.binding.root.setOnClickListener {
-            itemClickListener?.onItemClick(recipe.id)
-        }
-
-        val resources = holder.itemView.context.resources
-        val bottomMargin = if (position == itemCount - 1) {
-            resources.getDimensionPixelSize(R.dimen.main_space_16)
-        } else {
-            0
-        }
-
-        holder.itemView.updateLayoutParams<MarginLayoutParams> {
-            this.bottomMargin = bottomMargin
-        }
+        holder.bind(recipes[position])
     }
 
     override fun getItemCount(): Int = recipes.size
+
+    fun updateRecipes(newRecipes: List<Recipe>) {
+        recipes = newRecipes
+        notifyDataSetChanged()
+    }
 }
