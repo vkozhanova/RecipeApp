@@ -1,4 +1,4 @@
-package com.example.myapplication.fragments
+package com.example.myapplication.ui.recipes.pecipeList
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,14 +10,13 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.myapplication.ARG_CATEGORY_ID
-import com.example.myapplication.ARG_CATEGORY_IMAGE_URL
-import com.example.myapplication.ARG_CATEGORY_NAME
-import com.example.myapplication.ASSETS_BASE_PATH
-import com.example.myapplication.STUB
+import com.example.myapplication.data.ARG_CATEGORY_ID
+import com.example.myapplication.data.ARG_CATEGORY_IMAGE_URL
+import com.example.myapplication.data.ARG_CATEGORY_NAME
+import com.example.myapplication.data.ASSETS_BASE_PATH
+import com.example.myapplication.data.STUB
 import com.example.myapplication.databinding.FragmentListRecipesBinding
-import com.example.myapplication.RecipesListAdapter
-import com.example.myapplication.NavigationUtils
+import com.example.myapplication.ui.NavigationUtils
 
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentListRecipesBinding? = null
@@ -58,7 +57,7 @@ class RecipesListFragment : Fragment() {
         categoryName?.let { binding.titleText.text = it }
         categoryImageUrl?.let { fileName ->
             Glide.with(requireContext())
-                .load("$ASSETS_BASE_PATH$fileName")
+                .load("${ASSETS_BASE_PATH}$fileName")
                 .into(binding.headerImage)
         }
         val recipes = STUB.getRecipesByCategoryId(categoryId ?: 0)

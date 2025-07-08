@@ -1,4 +1,4 @@
-package com.example.myapplication.fragments
+package com.example.myapplication.ui.categories
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,14 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.myapplication.ARG_CATEGORY_ID
-import com.example.myapplication.ARG_CATEGORY_IMAGE_URL
-import com.example.myapplication.ARG_CATEGORY_NAME
-import com.example.myapplication.CategoriesListAdapter
+import com.example.myapplication.data.ARG_CATEGORY_ID
+import com.example.myapplication.data.ARG_CATEGORY_IMAGE_URL
+import com.example.myapplication.data.ARG_CATEGORY_NAME
 import com.example.myapplication.R
-import com.example.myapplication.STUB
+import com.example.myapplication.data.STUB
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 import androidx.core.view.updateLayoutParams
+import com.example.myapplication.ui.recipes.pecipeList.RecipesListFragment
 
 class CategoriesListFragment : Fragment() {
     private var _binding: FragmentListCategoriesBinding? = null

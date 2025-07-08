@@ -1,8 +1,11 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.example.myapplication.fragments.RecipeFragment
+import com.example.myapplication.data.ARG_RECIPE
+import com.example.myapplication.R
+import com.example.myapplication.data.STUB
+import com.example.myapplication.ui.recipes.recipe.RecipeFragment
 
 object NavigationUtils {
     fun openRecipeByRecipeId(fragment: Fragment, recipeId: Int) {

@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -6,9 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.example.myapplication.databinding.ActivityMainBinding
-import com.example.myapplication.fragments.CategoriesListFragment
-import com.example.myapplication.fragments.FavoritesFragment
+import com.example.myapplication.ui.categories.CategoriesListFragment
+import com.example.myapplication.ui.recipes.favorites.FavoritesFragment
 import androidx.fragment.app.replace
+import com.example.myapplication.R
 
 class MainActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.example.myapplication.fragments
+package com.example.myapplication.ui.recipes.recipe
 
 import android.content.Context
 import android.os.Build
@@ -14,14 +14,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.myapplication.ARG_RECIPE
-import com.example.myapplication.ASSETS_BASE_PATH
-import com.example.myapplication.FAVORITES_KEY
-import com.example.myapplication.IngredientsAdapter
-import com.example.myapplication.MethodAdapter
-import com.example.myapplication.PREFS_NAME
+import com.example.myapplication.data.ARG_RECIPE
+import com.example.myapplication.data.ASSETS_BASE_PATH
+import com.example.myapplication.data.FAVORITES_KEY
+import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.R
-import com.example.myapplication.Recipe
+import com.example.myapplication.model.Recipe
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
