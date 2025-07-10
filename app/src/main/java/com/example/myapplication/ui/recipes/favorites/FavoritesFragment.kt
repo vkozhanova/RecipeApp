@@ -1,4 +1,4 @@
-package com.example.myapplication.fragments
+package com.example.myapplication.ui.recipes.favorites
 
 import android.content.Context
 import android.os.Bundle
@@ -11,14 +11,14 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.myapplication.FAVORITES_KEY
-import com.example.myapplication.NavigationUtils
-import com.example.myapplication.PREFS_NAME
 import com.example.myapplication.R
-import com.example.myapplication.Recipe
-import com.example.myapplication.RecipesListAdapter
-import com.example.myapplication.STUB
+import com.example.myapplication.data.FAVORITES_KEY
+import com.example.myapplication.data.PREFS_NAME
+import com.example.myapplication.data.STUB
 import com.example.myapplication.databinding.FragmentFavoritesBinding
+import com.example.myapplication.model.Recipe
+import com.example.myapplication.ui.NavigationUtils
+import com.example.myapplication.ui.recipes.pecipeList.RecipesListAdapter
 
 class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
@@ -62,7 +62,12 @@ class FavoritesFragment : Fragment() {
     private fun initRecycler() {
         adapter = RecipesListAdapter(
             recipes = favoriteRecipes,
-            onItemClick = { recipe -> NavigationUtils.openRecipeByRecipeId(this@FavoritesFragment, recipe.id) },
+            onItemClick = { recipe ->
+                NavigationUtils.openRecipeByRecipeId(
+                    this@FavoritesFragment,
+                    recipe.id
+                )
+            },
         )
 
         binding.rvFavorites.apply {

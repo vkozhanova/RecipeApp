@@ -1,18 +1,20 @@
-package com.example.myapplication
+package com.example.myapplication.ui.recipes.pecipeList
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import android.view.ViewGroup.MarginLayoutParams
-import androidx.core.view.updateLayoutParams
+import com.example.myapplication.R
+import com.example.myapplication.data.ASSETS_BASE_PATH
 import com.example.myapplication.databinding.ItemRecipeBinding
+import com.example.myapplication.model.Recipe
 
 class RecipesListAdapter(
     private var recipes: List<Recipe>,
     private val onItemClick: (Recipe) -> Unit,
 
-) : RecyclerView.Adapter<RecipesListAdapter.RecipeViewHolder>() {
+    ) : RecyclerView.Adapter<RecipesListAdapter.RecipeViewHolder>() {
 
     inner class RecipeViewHolder(val binding: ItemRecipeBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -21,7 +23,7 @@ class RecipesListAdapter(
             binding.recipeTitle.text = recipe.title
 
             Glide.with(binding.root.context)
-                .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
+                .load("${ASSETS_BASE_PATH}${recipe.imageUrl}")
                 .into(binding.recipeImage)
 
             binding.root.setOnClickListener {
@@ -33,7 +35,7 @@ class RecipesListAdapter(
             } else {
                 0
             }
-            binding.root.updateLayoutParams<MarginLayoutParams> {
+            binding.root.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 this.bottomMargin = bottomMargin
             }
         }

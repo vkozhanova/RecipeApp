@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.data
 
 const val ARG_CATEGORY_ID = "category_id"
 const val ARG_CATEGORY_NAME = "category_name"

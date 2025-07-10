@@ -1,9 +1,11 @@
-package com.example.myapplication
+package com.example.myapplication.ui.categories
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.myapplication.data.ASSETS_BASE_PATH
+import com.example.myapplication.model.Category
 import com.example.myapplication.databinding.ItemCategoryBinding
 
 class CategoriesListAdapter(
@@ -29,7 +31,7 @@ class CategoriesListAdapter(
             binding.cardText.text = category.description
 
             Glide.with(binding.root.context)
-                .load("$ASSETS_BASE_PATH${category.imageUrl}")
+                .load("${ASSETS_BASE_PATH}${category.imageUrl}")
                 .into(binding.cardImage)
 
             binding.root.setOnClickListener {
