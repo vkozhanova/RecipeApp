@@ -3,6 +3,7 @@ package com.example.myapplication.ui.recipes.recipe
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,8 +34,7 @@ class RecipeFragment : Fragment() {
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentRecipeBinding must not be null")
 
-    private var currentRecipe: Recipe? = null
-    private var isFavorite: Boolean = false
+    private val viewModel: RecipeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,11 +55,36 @@ class RecipeFragment : Fragment() {
             }
             insets
         }
-        currentRecipe = getRecipeFromArguments()
-        currentRecipe?.let { recipe ->
-            isFavorite = getFavorites().contains(recipe.id.toString())
-            initUI(recipe)
-            initRecycler(recipe)
+
+        binding.iconFavorites.setOnClickListener {
+            viewModel.state.value?.let { state ->
+                viewModel.setIsFavorite(!state.isFavorite)
+            }
+        }
+
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            Log.i("!!!", "isFavorite: ${state.isFavorite}")
+
+            state.recipe?.let { recipe ->
+                Glide.with(requireContext())
+                    .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
+                    .into(binding.headerImage)
+
+                binding.titleText.text = recipe.title
+                updateFavoriteIcon(state.isFavorite)
+
+                if (binding.rvIngredients.adapter == null) {
+                    initRecycler(recipe)
+                }
+                saveFavoritesStatus(recipe.id, state.isFavorite)
+            }
+        }
+
+        val recipe = getRecipeFromArguments()
+        if (recipe != null) {
+            viewModel.setRecipe(recipe)
+            val isFavorite = getFavorites().contains(recipe.id.toString())
+            viewModel.setIsFavorite(isFavorite)
         }
     }
 
@@ -69,30 +97,6 @@ class RecipeFragment : Fragment() {
         }
     }
 
-    private fun initUI(recipe: Recipe) {
-        Glide.with(requireContext())
-            .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
-            .into(binding.headerImage)
-
-        binding.titleText.text = recipe.title
-
-        updateFavoriteIcon(isFavorite)
-        binding.iconFavorites.setOnClickListener {
-            isFavorite = !isFavorite
-            updateFavoriteIcon(isFavorite)
-
-            currentRecipe?.id?.toString().let { recipeId ->
-                val favorites = getFavorites().toMutableSet()
-                if (isFavorite) {
-                    favorites.add(recipeId.toString())
-                } else {
-                    favorites.remove(recipeId)
-                }
-                saveFavorites(favorites)
-            }
-        }
-    }
-
     private fun updateFavoriteIcon(isFavorite: Boolean) {
         val iconRes = if (isFavorite) {
             R.drawable.ic_heart
@@ -100,6 +104,16 @@ class RecipeFragment : Fragment() {
             R.drawable.ic_heart_empty
         }
         binding.iconFavorites.setImageResource(iconRes)
+    }
+
+    fun saveFavoritesStatus(recipeId: Int, isFavorite: Boolean) {
+        val favorites = getFavorites().toMutableSet()
+        if (isFavorite) {
+            favorites.add(recipeId.toString())
+        } else {
+            favorites.remove(recipeId.toString())
+        }
+        saveFavorites(favorites)
     }
 
     fun saveFavorites(recipesIds: Set<String>) {

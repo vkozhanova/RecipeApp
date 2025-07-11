@@ -17,7 +17,7 @@ import com.example.myapplication.R
 import com.example.myapplication.data.STUB
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 import androidx.core.view.updateLayoutParams
-import com.example.myapplication.ui.recipes.pecipeList.RecipesListFragment
+import com.example.myapplication.ui.recipes.recipeList.RecipesListFragment
 
 class CategoriesListFragment : Fragment() {
     private var _binding: FragmentListCategoriesBinding? = null

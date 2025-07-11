@@ -18,7 +18,7 @@ import com.example.myapplication.data.STUB
 import com.example.myapplication.databinding.FragmentFavoritesBinding
 import com.example.myapplication.model.Recipe
 import com.example.myapplication.ui.NavigationUtils
-import com.example.myapplication.ui.recipes.pecipeList.RecipesListAdapter
+import com.example.myapplication.ui.recipes.recipeList.RecipesListAdapter
 
 class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null

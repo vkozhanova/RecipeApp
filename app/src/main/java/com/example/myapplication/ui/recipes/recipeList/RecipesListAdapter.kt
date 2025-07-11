@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.recipes.pecipeList
+package com.example.myapplication.ui.recipes.recipeList
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
