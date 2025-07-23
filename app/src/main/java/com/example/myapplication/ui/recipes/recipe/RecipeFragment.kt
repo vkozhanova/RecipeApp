@@ -1,8 +1,8 @@
 package com.example.myapplication.ui.recipes.recipe
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,27 +11,26 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.data.ARG_RECIPE
 import com.example.myapplication.data.ASSETS_BASE_PATH
-import com.example.myapplication.data.FAVORITES_KEY
-import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.R
 import com.example.myapplication.model.Recipe
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
 class RecipeFragment : Fragment() {
-
     private var _binding: FragmentRecipeBinding? = null
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentRecipeBinding must not be null")
 
-    private var currentRecipe: Recipe? = null
-    private var isFavorite: Boolean = false
+    private val viewModel: RecipeViewModel by viewModels {
+        RecipeViewModelFactory(requireContext().applicationContext)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,11 +51,33 @@ class RecipeFragment : Fragment() {
             }
             insets
         }
-        currentRecipe = getRecipeFromArguments()
-        currentRecipe?.let { recipe ->
-            isFavorite = getFavorites().contains(recipe.id.toString())
-            initUI(recipe)
-            initRecycler(recipe)
+
+        binding.iconFavorites.setOnClickListener {
+            viewModel.state.value?.let { state ->
+                viewModel.setIsFavorite(!state.isFavorite)
+            }
+        }
+
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            Log.i("!!!", "isFavorite: ${state.isFavorite}")
+
+            state.recipe?.let { recipe ->
+                Glide.with(requireContext())
+                    .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
+                    .into(binding.headerImage)
+
+                binding.titleText.text = recipe.title
+                updateFavoriteIcon(state.isFavorite)
+
+                if (binding.rvIngredients.adapter == null) {
+                    initRecycler(recipe)
+                }
+            }
+        }
+
+        getRecipeFromArguments()?.let { recipe ->
+            viewModel.setRecipe(recipe)
+
         }
     }
 
@@ -69,30 +90,6 @@ class RecipeFragment : Fragment() {
         }
     }
 
-    private fun initUI(recipe: Recipe) {
-        Glide.with(requireContext())
-            .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
-            .into(binding.headerImage)
-
-        binding.titleText.text = recipe.title
-
-        updateFavoriteIcon(isFavorite)
-        binding.iconFavorites.setOnClickListener {
-            isFavorite = !isFavorite
-            updateFavoriteIcon(isFavorite)
-
-            currentRecipe?.id?.toString().let { recipeId ->
-                val favorites = getFavorites().toMutableSet()
-                if (isFavorite) {
-                    favorites.add(recipeId.toString())
-                } else {
-                    favorites.remove(recipeId)
-                }
-                saveFavorites(favorites)
-            }
-        }
-    }
-
     private fun updateFavoriteIcon(isFavorite: Boolean) {
         val iconRes = if (isFavorite) {
             R.drawable.ic_heart
@@ -100,22 +97,6 @@ class RecipeFragment : Fragment() {
             R.drawable.ic_heart_empty
         }
         binding.iconFavorites.setImageResource(iconRes)
-    }
-
-    fun saveFavorites(recipesIds: Set<String>) {
-        val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-        sharedPrefs.edit()
-            .putStringSet(FAVORITES_KEY, recipesIds)
-            .apply()
-    }
-
-    fun getFavorites(): MutableSet<String> {
-        val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-        val favorites = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
-
-        return HashSet(favorites)
     }
 
     private fun initRecycler(recipe: Recipe) {
