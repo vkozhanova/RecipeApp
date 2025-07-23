@@ -1,6 +1,5 @@
 package com.example.myapplication.ui.recipes.recipe
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,28 +12,25 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.data.ARG_RECIPE
 import com.example.myapplication.data.ASSETS_BASE_PATH
-import com.example.myapplication.data.FAVORITES_KEY
-import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.R
 import com.example.myapplication.model.Recipe
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
 class RecipeFragment : Fragment() {
-
     private var _binding: FragmentRecipeBinding? = null
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentRecipeBinding must not be null")
 
-    private val viewModel: RecipeViewModel by viewModels()
+    private val viewModel: RecipeViewModel by viewModels {
+        RecipeViewModelFactory(requireContext().applicationContext)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,15 +72,12 @@ class RecipeFragment : Fragment() {
                 if (binding.rvIngredients.adapter == null) {
                     initRecycler(recipe)
                 }
-                saveFavoritesStatus(recipe.id, state.isFavorite)
             }
         }
 
-        val recipe = getRecipeFromArguments()
-        if (recipe != null) {
+        getRecipeFromArguments()?.let { recipe ->
             viewModel.setRecipe(recipe)
-            val isFavorite = getFavorites().contains(recipe.id.toString())
-            viewModel.setIsFavorite(isFavorite)
+
         }
     }
 
@@ -104,32 +97,6 @@ class RecipeFragment : Fragment() {
             R.drawable.ic_heart_empty
         }
         binding.iconFavorites.setImageResource(iconRes)
-    }
-
-    fun saveFavoritesStatus(recipeId: Int, isFavorite: Boolean) {
-        val favorites = getFavorites().toMutableSet()
-        if (isFavorite) {
-            favorites.add(recipeId.toString())
-        } else {
-            favorites.remove(recipeId.toString())
-        }
-        saveFavorites(favorites)
-    }
-
-    fun saveFavorites(recipesIds: Set<String>) {
-        val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-        sharedPrefs.edit()
-            .putStringSet(FAVORITES_KEY, recipesIds)
-            .apply()
-    }
-
-    fun getFavorites(): MutableSet<String> {
-        val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-        val favorites = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
-
-        return HashSet(favorites)
     }
 
     private fun initRecycler(recipe: Recipe) {
