@@ -1,6 +1,5 @@
 package com.example.myapplication.ui.recipes.recipe
 
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.example.myapplication.data.ARG_RECIPE
 import com.example.myapplication.data.ASSETS_BASE_PATH
 import com.example.myapplication.R
+import com.example.myapplication.data.INVALID_RECIPE_ID
 import com.example.myapplication.model.Recipe
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
@@ -27,10 +27,10 @@ class RecipeFragment : Fragment() {
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentRecipeBinding must not be null")
+    private val viewModel: RecipeViewModel by viewModels()
+    private var ingredientsAdapter: IngredientsAdapter? = null
 
-    private val viewModel: RecipeViewModel by viewModels {
-        RecipeViewModelFactory(requireContext().applicationContext)
-    }
+    private var methodAdapter: MethodAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,51 +43,52 @@ class RecipeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupWindowInsets()
+        initUI()
+    }
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.bcgRecipes.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = systemBars.top
-            }
-            insets
+    private fun initUI() {
+        val recipeId = arguments?.getInt(ARG_RECIPE) ?: INVALID_RECIPE_ID
+        Log.d("RecipeFragment", "Initializing UI for recipe ID: $recipeId")
+
+        if (recipeId == INVALID_RECIPE_ID) {
+            Log.e("RecipeFragment", "Invalid recipe ID")
+            return
         }
 
-        binding.iconFavorites.setOnClickListener {
-            viewModel.state.value?.let { state ->
-                viewModel.setIsFavorite(!state.isFavorite)
-            }
-        }
+        viewModel.loadRecipe(recipeId)
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
-            Log.i("!!!", "isFavorite: ${state.isFavorite}")
+            Log.d("RecipeFragment", "State updated: ${state.recipe?.title}")
 
             state.recipe?.let { recipe ->
-                Glide.with(requireContext())
-                    .load("$ASSETS_BASE_PATH${recipe.imageUrl}")
+                Glide.with(this@RecipeFragment)
+                    .load(ASSETS_BASE_PATH + recipe.imageUrl)
                     .into(binding.headerImage)
 
                 binding.titleText.text = recipe.title
-                updateFavoriteIcon(state.isFavorite)
 
-                if (binding.rvIngredients.adapter == null) {
-                    initRecycler(recipe)
+                initRecyclers(recipe)
+            }
+            updateFavoriteIcon(state.isFavorite)
+
+            updatePortionsUI(state.portionsCount)
+        }
+
+        binding.iconFavorites.setOnClickListener {
+            viewModel.onFavoritesClicked()
+        }
+
+        binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (fromUser && progress > 0) {
+                    viewModel.setPortionsCount(progress)
                 }
             }
-        }
 
-        getRecipeFromArguments()?.let { recipe ->
-            viewModel.setRecipe(recipe)
-
-        }
-    }
-
-    private fun getRecipeFromArguments(): Recipe? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getParcelable(ARG_RECIPE, Recipe::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            arguments?.getParcelable(ARG_RECIPE)
-        }
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
     }
 
     private fun updateFavoriteIcon(isFavorite: Boolean) {
@@ -99,46 +100,63 @@ class RecipeFragment : Fragment() {
         binding.iconFavorites.setImageResource(iconRes)
     }
 
-    private fun initRecycler(recipe: Recipe) {
-        val portionValue = binding.tvPortionsValue
-        val seekbar = binding.seekbar
-        portionValue.text = seekbar.progress.toString()
+    private fun updatePortionsUI(portionsCount: Int) {
+        binding.tvPortionsValue.text = portionsCount.toString()
+        if (binding.seekbar.progress != portionsCount) {
+            binding.seekbar.progress = portionsCount
+        }
+        ingredientsAdapter?.updateIngredients(portionsCount)
+    }
 
-        val ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
-        ingredientsAdapter.updateIngredients(seekbar.progress)
+    private fun initRecyclers(recipe: Recipe) {
+        Log.d("RecipeFragment", "Updating recyclers for: ${recipe.title}")
 
-        seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val portion = progress
-                portionValue.text = portion.toString()
-                ingredientsAdapter.updateIngredients(portion)
+        if (ingredientsAdapter == null) {
+            ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
+            binding.rvIngredients.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = ingredientsAdapter
+                setHasFixedSize(true)
+                addItemDecoration(createDivider())
             }
+        } else {
+            ingredientsAdapter?.updateData(recipe.ingredients)
+        }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
+        if (methodAdapter == null) {
+            methodAdapter = MethodAdapter(recipe.method)
+            binding.rvMethod.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = methodAdapter
+                setHasFixedSize(true)
+                addItemDecoration(createDivider())
+            }
+        } else {
+            methodAdapter?.updateData(recipe.method)
+        }
 
-        val divider = MaterialDividerItemDecoration(requireContext(), RecyclerView.VERTICAL).apply {
+        ingredientsAdapter?.updateIngredients(viewModel.state.value?.portionsCount ?: 1)
+    }
+
+    private fun createDivider(): MaterialDividerItemDecoration {
+        return MaterialDividerItemDecoration(requireContext(), RecyclerView.VERTICAL).apply {
             isLastItemDecorated = false
             dividerInsetStart = resources.getDimensionPixelSize(R.dimen.divider_padding)
             dividerInsetEnd = resources.getDimensionPixelSize(R.dimen.divider_padding)
             dividerColor = resources.getColor(R.color.divider_light_gray_color, null)
         }
+    }
 
-        binding.rvIngredients.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = ingredientsAdapter
-            addItemDecoration(divider)
-            setHasFixedSize(true)
-        }
-
-        binding.rvMethod.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = MethodAdapter(recipe.method)
-            addItemDecoration(divider)
-            setHasFixedSize(true)
+    private fun setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
+            insets
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

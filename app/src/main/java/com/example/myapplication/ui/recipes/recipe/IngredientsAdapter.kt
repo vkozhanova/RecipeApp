@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.recipes.recipe
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +9,7 @@ import com.example.myapplication.model.Ingredient
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class IngredientsAdapter(private val ingredients: List<Ingredient>) :
+class IngredientsAdapter(private var ingredients: List<Ingredient>) :
     RecyclerView.Adapter<IngredientsAdapter.IngredientViewHolder>() {
 
     private var multiplier: Int = 1
@@ -16,6 +17,13 @@ class IngredientsAdapter(private val ingredients: List<Ingredient>) :
     fun updateIngredients(progress: Int) {
         multiplier = progress
         notifyDataSetChanged()
+    }
+
+    fun updateData(newIngredients: List<Ingredient>) {
+        ingredients = newIngredients
+        multiplier = 1
+        notifyDataSetChanged()
+        Log.d("IngredientsAdapter", "Data updated: ${newIngredients.size} items")
     }
 
     override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {
