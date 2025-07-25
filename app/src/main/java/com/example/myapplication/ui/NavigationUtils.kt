@@ -20,7 +20,7 @@ object NavigationUtils {
         fragment.parentFragmentManager.beginTransaction()
             .replace(R.id.mainContainer, recipeFragment)
             .setReorderingAllowed(true)
-            .addToBackStack("recipe_$recipeId")
+            .addToBackStack(null)
             .commit()
 
         Log.d("Navigation", "Opened recipe ID: $recipeId")
