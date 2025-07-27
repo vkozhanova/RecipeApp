@@ -9,21 +9,19 @@ import com.example.myapplication.model.Ingredient
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class IngredientsAdapter(private var ingredients: List<Ingredient>) :
+class IngredientsAdapter(initialIngredients: List<Ingredient>) :
     RecyclerView.Adapter<IngredientsAdapter.IngredientViewHolder>() {
 
-    private var multiplier: Int = 1
+        private var ingredients: List<Ingredient> = initialIngredients
+        private var multiplier: Int = 1
 
-    fun updateIngredients(progress: Int) {
-        multiplier = progress
-        notifyDataSetChanged()
-    }
-
-    fun updateData(newIngredients: List<Ingredient>) {
-        ingredients = newIngredients
-        multiplier = 1
-        notifyDataSetChanged()
-        Log.d("IngredientsAdapter", "Data updated: ${newIngredients.size} items")
+    fun updateState(newIngredients: List<Ingredient>, newMultiplier: Int) {
+        if (ingredients != newIngredients || multiplier != newMultiplier) {
+            ingredients = newIngredients
+            multiplier = newMultiplier
+            notifyDataSetChanged()
+            Log.d("Ingredient Adapter", "Updated: ${newIngredients.size} items *$newMultiplier")
+        }
     }
 
     override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {

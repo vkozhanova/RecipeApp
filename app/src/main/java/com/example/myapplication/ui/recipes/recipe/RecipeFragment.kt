@@ -62,17 +62,22 @@ class RecipeFragment : Fragment() {
             Log.d("RecipeFragment", "State updated: ${state.recipe?.title}")
 
             state.recipe?.let { recipe ->
-                Glide.with(this@RecipeFragment)
-                    .load(ASSETS_BASE_PATH + recipe.imageUrl)
-                    .into(binding.headerImage)
 
-                binding.titleText.text = recipe.title
+                if (binding.titleText.text != recipe.title) {
+                    Glide.with(this@RecipeFragment)
+                        .load(ASSETS_BASE_PATH + recipe.imageUrl)
+                        .into(binding.headerImage)
 
-                initRecyclers(recipe)
+                    binding.titleText.text = recipe.title
+                    initRecyclers(recipe)
+                }
             }
+
             updateFavoriteIcon(state.isFavorite)
 
             updatePortionsUI(state.portionsCount)
+
+            updateAdapters(state)
         }
 
         binding.iconFavorites.setOnClickListener {
@@ -91,6 +96,18 @@ class RecipeFragment : Fragment() {
         })
     }
 
+    private fun updateAdapters(state: RecipeViewModel.RecipeState) {
+
+        ingredientsAdapter?.updateState(
+            state.recipe?.ingredients ?: emptyList(),
+            state.portionsCount
+        )
+
+        state.recipe?.let {
+            methodAdapter?.updateData(it.method)
+        }
+    }
+
     private fun updateFavoriteIcon(isFavorite: Boolean) {
         val iconRes = if (isFavorite) {
             R.drawable.ic_heart
@@ -105,37 +122,30 @@ class RecipeFragment : Fragment() {
         if (binding.seekbar.progress != portionsCount) {
             binding.seekbar.progress = portionsCount
         }
-        ingredientsAdapter?.updateIngredients(portionsCount)
     }
 
     private fun initRecyclers(recipe: Recipe) {
         Log.d("RecipeFragment", "Updating recyclers for: ${recipe.title}")
 
         if (ingredientsAdapter == null) {
-            ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
+            ingredientsAdapter = IngredientsAdapter(emptyList())
             binding.rvIngredients.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = ingredientsAdapter
                 setHasFixedSize(true)
                 addItemDecoration(createDivider())
             }
-        } else {
-            ingredientsAdapter?.updateData(recipe.ingredients)
         }
 
         if (methodAdapter == null) {
-            methodAdapter = MethodAdapter(recipe.method)
+            methodAdapter = MethodAdapter(emptyList())
             binding.rvMethod.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = methodAdapter
                 setHasFixedSize(true)
                 addItemDecoration(createDivider())
             }
-        } else {
-            methodAdapter?.updateData(recipe.method)
         }
-
-        ingredientsAdapter?.updateIngredients(viewModel.state.value?.portionsCount ?: 1)
     }
 
     private fun createDivider(): MaterialDividerItemDecoration {
