@@ -3,6 +3,7 @@ package com.example.myapplication.ui.recipes.recipe
 
 import android.app.Application
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -11,6 +12,8 @@ import com.example.myapplication.data.FAVORITES_KEY
 import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.data.STUB
 import com.example.myapplication.model.Recipe
+import java.io.IOException
+import java.io.InputStream
 
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPrefs = getApplication<Application>()
@@ -29,10 +32,11 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     data class RecipeState(
         val recipe: Recipe? = null,
         val isFavorite: Boolean = false,
-        val portionsCount: Int = 1
+        val portionsCount: Int = 1,
+        val recipeImage: Drawable? = null
     )
 
-    fun loadRecipe(recipeId: Int) {
+     fun loadRecipe(recipeId: Int) {
         //TODO(Загрузить рецепт по id из сети или базы данных)
         if (currentRecipeId == recipeId) return
 
@@ -43,17 +47,30 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         Log.d("RecipeViewModel", "Recipe found: ${recipe?.title ?: "null"}")
 
         val isFavorite = getFavorites().contains(recipeId.toString())
-        val portionsCount = if (_state.value?.recipe?.id == recipeId) {
-            _state.value?.portionsCount ?: 1
-        } else {
-            1
-        }
 
-        _state.value = RecipeState(
+         val portionsCount = _state.value?.portionsCount ?: 1
+
+         val recipeImage = recipe?.imageUrl?.let { imageName ->
+             loadImageFromAssets(imageName)
+         }
+
+            _state.value = RecipeState(
             recipe = recipe,
             isFavorite = isFavorite,
-            portionsCount = portionsCount
+            portionsCount = portionsCount,
+            recipeImage = recipeImage
         )
+    }
+    private fun loadImageFromAssets(imageName: String): Drawable? {
+        return try {
+            val inputStream: InputStream = getApplication<Application>().assets.open(imageName)
+            Drawable.createFromStream(inputStream, null).apply {
+                inputStream.close()
+            }
+        } catch (e: IOException) {
+            Log.e("RecipeViewModel", "Error loading image: ${e.message}", e)
+            null
+        }
     }
 
     fun getFavorites(): Set<String> {

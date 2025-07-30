@@ -13,12 +13,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.myapplication.data.ARG_RECIPE
-import com.example.myapplication.data.ASSETS_BASE_PATH
 import com.example.myapplication.R
 import com.example.myapplication.data.INVALID_RECIPE_ID
-import com.example.myapplication.model.Recipe
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
@@ -62,22 +59,20 @@ class RecipeFragment : Fragment() {
             Log.d("RecipeFragment", "State updated: ${state.recipe?.title}")
 
             state.recipe?.let { recipe ->
+                binding.titleText.text = recipe.title
+            }
 
-                if (binding.titleText.text != recipe.title) {
-                    Glide.with(this@RecipeFragment)
-                        .load(ASSETS_BASE_PATH + recipe.imageUrl)
-                        .into(binding.headerImage)
-
-                    binding.titleText.text = recipe.title
-                    initRecyclers(recipe)
-                }
+            state.recipeImage?.let {
+                binding.headerImage.setImageDrawable(it)
+            } ?: run {
+                Log.e("RecipeFragment", "Failed to load image for recipe: ${state.recipe?.title}")
             }
 
             updateFavoriteIcon(state.isFavorite)
 
             updatePortionsUI(state.portionsCount)
 
-            updateAdapters(state)
+            initRecyclers(state)
         }
 
         binding.iconFavorites.setOnClickListener {
@@ -96,17 +91,6 @@ class RecipeFragment : Fragment() {
         })
     }
 
-    private fun updateAdapters(state: RecipeViewModel.RecipeState) {
-
-        ingredientsAdapter?.updateState(
-            state.recipe?.ingredients ?: emptyList(),
-            state.portionsCount
-        )
-
-        state.recipe?.let {
-            methodAdapter?.updateData(it.method)
-        }
-    }
 
     private fun updateFavoriteIcon(isFavorite: Boolean) {
         val iconRes = if (isFavorite) {
@@ -124,27 +108,38 @@ class RecipeFragment : Fragment() {
         }
     }
 
-    private fun initRecyclers(recipe: Recipe) {
-        Log.d("RecipeFragment", "Updating recyclers for: ${recipe.title}")
+    private fun initRecyclers(state: RecipeViewModel.RecipeState) {
+        Log.d("RecipeFragment", "Initializing recyclers")
 
         if (ingredientsAdapter == null) {
-            ingredientsAdapter = IngredientsAdapter(emptyList())
+            ingredientsAdapter = IngredientsAdapter(
+                state.recipe?.ingredients ?: emptyList()
+            )
+
             binding.rvIngredients.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = ingredientsAdapter
                 setHasFixedSize(true)
-                addItemDecoration(createDivider())
+                addItemDecoration(createDivider()
+                )
             }
+        } else {
+            ingredientsAdapter?.updateState(
+                state.recipe?.ingredients ?: emptyList(),
+                state.portionsCount
+            )
         }
 
         if (methodAdapter == null) {
-            methodAdapter = MethodAdapter(emptyList())
+            methodAdapter = MethodAdapter(state.recipe?.method ?: emptyList())
             binding.rvMethod.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = methodAdapter
                 setHasFixedSize(true)
                 addItemDecoration(createDivider())
             }
+        } else {
+            methodAdapter?.updateData(state.recipe?.method ?: emptyList())
         }
     }
 
@@ -171,5 +166,7 @@ class RecipeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        ingredientsAdapter = null
+        methodAdapter = null
     }
 }
