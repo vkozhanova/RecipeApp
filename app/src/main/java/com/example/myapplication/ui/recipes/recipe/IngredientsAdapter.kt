@@ -12,8 +12,8 @@ import java.math.RoundingMode
 class IngredientsAdapter(initialIngredients: List<Ingredient>) :
     RecyclerView.Adapter<IngredientsAdapter.IngredientViewHolder>() {
 
-        private var ingredients: List<Ingredient> = initialIngredients
-        private var multiplier: Int = 1
+    private var ingredients: List<Ingredient> = initialIngredients
+    private var multiplier: Int = 1
 
     fun updateState(newIngredients: List<Ingredient>, newMultiplier: Int) {
         if (ingredients != newIngredients || multiplier != newMultiplier) {
