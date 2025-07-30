@@ -1,85 +1,89 @@
 package com.example.myapplication.ui.recipes.recipe
 
 
+import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.data.FAVORITES_KEY
+import com.example.myapplication.data.PREFS_NAME
+import com.example.myapplication.data.STUB
 import com.example.myapplication.model.Recipe
 
-interface PreferencesStorage {
-    fun getFavorites(): Set<String>
-    fun saveFavorites(favorites: Set<String>)
-}
-
-class SharedPreferencesStorage(
-    private val sharedPreferences: SharedPreferences
-) : PreferencesStorage {
-
-    override fun getFavorites(): Set<String> {
-        return sharedPreferences.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
-    }
-
-    override fun saveFavorites(favorites: Set<String>) {
-        sharedPreferences.edit().putStringSet(FAVORITES_KEY, favorites).apply()
-    }
-}
-
-class RecipeViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val sharedPrefs = context.getSharedPreferences("recipe_preferences", Context.MODE_PRIVATE)
-        val storage = SharedPreferencesStorage(sharedPrefs)
-
-        if (modelClass.isAssignableFrom(RecipeViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return RecipeViewModel(storage) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-
-class RecipeViewModel(
-    private val storage: PreferencesStorage
-) : ViewModel() {
+class RecipeViewModel(application: Application) : AndroidViewModel(application) {
+    private val sharedPrefs = getApplication<Application>()
+        .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val _state = MutableLiveData<RecipeState>()
     val state: LiveData<RecipeState>
         get() = _state
 
+    private var currentRecipeId: Int = -1
+
     init {
         Log.i("RecipeViewModel", "VIEWMODEL INITIALIZED")
-        _state.value = RecipeState(isFavorite = false)
+        _state.value = RecipeState()
     }
 
     data class RecipeState(
-
         val recipe: Recipe? = null,
-        val isFavorite: Boolean = false
+        val isFavorite: Boolean = false,
+        val portionsCount: Int = 1
     )
 
-    fun setRecipe(recipe: Recipe) {
-        val favorites = storage.getFavorites()
-        val isFavorite = favorites.contains(recipe.id.toString())
-        _state.value = _state.value?.copy(recipe = recipe, isFavorite = isFavorite)
+    fun loadRecipe(recipeId: Int) {
+        //TODO(Загрузить рецепт по id из сети или базы данных)
+        if (currentRecipeId == recipeId) return
+
+        currentRecipeId = recipeId
+        Log.d("RecipeViewModel", "Loading recipe ID: $recipeId")
+
+        val recipe = STUB.getRecipeById(recipeId)
+        Log.d("RecipeViewModel", "Recipe found: ${recipe?.title ?: "null"}")
+
+        val isFavorite = getFavorites().contains(recipeId.toString())
+        val portionsCount = if (_state.value?.recipe?.id == recipeId) {
+            _state.value?.portionsCount ?: 1
+        } else {
+            1
+        }
+
+        _state.value = RecipeState(
+            recipe = recipe,
+            isFavorite = isFavorite,
+            portionsCount = portionsCount
+        )
     }
 
-    fun setIsFavorite(isFavorite: Boolean) {
-        _state.value?.recipe?.let { recipe ->
-            val favorites = storage.getFavorites().toMutableSet()
+    fun getFavorites(): Set<String> {
+        return sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
+    }
 
-            if (isFavorite) {
-                favorites.add(recipe.id.toString())
-            } else {
-                favorites.remove(recipe.id.toString())
-            }
+    fun onFavoritesClicked() {
+        val currentState = _state.value ?: return
+        val recipeId = currentState.recipe?.id ?: return
+        val newFavoriteState = !currentState.isFavorite
 
-            storage.saveFavorites(favorites)
+        updateFavorites(recipeId, newFavoriteState)
 
-            _state.value = _state.value?.copy(isFavorite = isFavorite)
+        _state.value = currentState.copy(isFavorite = newFavoriteState)
+    }
+
+    fun updateFavorites(recipeId: Int, isFavorite: Boolean) {
+        val newFavorites = getFavorites().toMutableSet().apply {
+            if (isFavorite) add(recipeId.toString()) else remove(recipeId.toString())
         }
+        saveFavorites(newFavorites)
+    }
+
+    fun saveFavorites(favorites: Set<String>) {
+        sharedPrefs.edit()
+            .putStringSet(FAVORITES_KEY, favorites)
+            .apply()
+    }
+
+    fun setPortionsCount(count: Int) {
+        _state.value = _state.value?.copy(portionsCount = count)
     }
 }
