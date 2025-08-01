@@ -48,17 +48,16 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
         val isFavorite = getFavorites().contains(recipeId.toString())
 
-         val portionsCount = _state.value?.portionsCount ?: 1
+         val currentState = state.value ?: RecipeState()
 
          val recipeImage = recipe?.imageUrl?.let { imageName ->
              loadImageFromAssets(imageName)
          }
 
-            _state.value = RecipeState(
-            recipe = recipe,
-            isFavorite = isFavorite,
-            portionsCount = portionsCount,
-            recipeImage = recipeImage
+         _state.value = currentState.copy(
+             recipe = recipe,
+             isFavorite = isFavorite,
+             recipeImage = recipeImage
         )
     }
     private fun loadImageFromAssets(imageName: String): Drawable? {
@@ -78,7 +77,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun onFavoritesClicked() {
-        val currentState = _state.value ?: return
+        val currentState = state.value ?: return
         val recipeId = currentState.recipe?.id ?: return
         val newFavoriteState = !currentState.isFavorite
 
@@ -101,6 +100,8 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun setPortionsCount(count: Int) {
-        _state.value = _state.value?.copy(portionsCount = count)
+        val currentState = state.value ?: return
+
+        _state.value = currentState.copy(portionsCount = count)
     }
 }
