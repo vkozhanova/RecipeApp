@@ -11,9 +11,12 @@ import androidx.lifecycle.MutableLiveData
 import com.example.myapplication.data.FAVORITES_KEY
 import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.data.STUB
+import com.example.myapplication.model.Ingredient
 import com.example.myapplication.model.Recipe
 import java.io.IOException
 import java.io.InputStream
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPrefs = getApplication<Application>()
@@ -33,10 +36,27 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         val recipe: Recipe? = null,
         val isFavorite: Boolean = false,
         val portionsCount: Int = 1,
-        val recipeImage: Drawable? = null
+        val recipeImage: Drawable? = null,
     )
 
-     fun loadRecipe(recipeId: Int) {
+    fun getAdjustedIngredients(): List<Ingredient> {
+        val state = state.value ?: return emptyList()
+        val recipe = state.recipe ?: return emptyList()
+        val portionsCount = state.portionsCount
+
+        return recipe.ingredients.map { ingredient ->
+
+                val formattedQuantity = BigDecimal(ingredient.quantity.replace(",", "."))
+                    .multiply(BigDecimal(portionsCount))
+                    .setScale(1, RoundingMode.HALF_UP)
+                    .stripTrailingZeros()
+                    .toPlainString()
+
+                ingredient.copy(quantity = formattedQuantity)
+        }
+    }
+
+    fun loadRecipe(recipeId: Int) {
         //TODO(Загрузить рецепт по id из сети или базы данных)
         if (currentRecipeId == recipeId) return
 
@@ -48,18 +68,20 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
         val isFavorite = getFavorites().contains(recipeId.toString())
 
-         val currentState = state.value ?: RecipeState()
+        val currentState = state.value ?: RecipeState()
 
-         val recipeImage = recipe?.imageUrl?.let { imageName ->
-             loadImageFromAssets(imageName)
-         }
+        val recipeImage = recipe?.imageUrl?.let { imageName ->
+            loadImageFromAssets(imageName)
+        }
 
-         _state.value = currentState.copy(
-             recipe = recipe,
-             isFavorite = isFavorite,
-             recipeImage = recipeImage
+        _state.value = currentState.copy(
+            recipe = recipe,
+            isFavorite = isFavorite,
+            recipeImage = recipeImage,
+            portionsCount = currentState.portionsCount
         )
     }
+
     private fun loadImageFromAssets(imageName: String): Drawable? {
         return try {
             val inputStream: InputStream = getApplication<Application>().assets.open(imageName)

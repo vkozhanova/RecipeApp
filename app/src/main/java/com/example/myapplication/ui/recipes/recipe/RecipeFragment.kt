@@ -55,11 +55,18 @@ class RecipeFragment : Fragment() {
 
         viewModel.loadRecipe(recipeId)
 
+        initRecyclers()
+
         viewModel.state.observe(viewLifecycleOwner) { state ->
             Log.d("RecipeFragment", "State updated: ${state.recipe?.title}")
 
             state.recipe?.let { recipe ->
                 binding.titleText.text = recipe.title
+
+                val adjustedIngredients = viewModel.getAdjustedIngredients()
+
+                ingredientsAdapter?.updateIngredients(adjustedIngredients)
+                methodAdapter?.updateData(recipe.method)
             }
 
             state.recipeImage?.let {
@@ -71,8 +78,6 @@ class RecipeFragment : Fragment() {
             updateFavoriteIcon(state.isFavorite)
 
             updatePortionsUI(state.portionsCount)
-
-            initRecyclers(state)
         }
 
         binding.iconFavorites.setOnClickListener {
@@ -91,7 +96,6 @@ class RecipeFragment : Fragment() {
         })
     }
 
-
     private fun updateFavoriteIcon(isFavorite: Boolean) {
         val iconRes = if (isFavorite) {
             R.drawable.ic_heart
@@ -108,38 +112,26 @@ class RecipeFragment : Fragment() {
         }
     }
 
-    private fun initRecyclers(state: RecipeViewModel.RecipeState) {
+    private fun initRecyclers() {
         Log.d("RecipeFragment", "Initializing recyclers")
 
-        if (ingredientsAdapter == null) {
-            ingredientsAdapter = IngredientsAdapter(
-                state.recipe?.ingredients ?: emptyList()
-            )
+        ingredientsAdapter = IngredientsAdapter(emptyList())
 
-            binding.rvIngredients.apply {
-                layoutManager = LinearLayoutManager(requireContext())
-                adapter = ingredientsAdapter
-                setHasFixedSize(true)
-                addItemDecoration(createDivider()
-                )
-            }
-        } else {
-            ingredientsAdapter?.updateState(
-                state.recipe?.ingredients ?: emptyList(),
-                state.portionsCount
+        binding.rvIngredients.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = ingredientsAdapter
+            setHasFixedSize(true)
+            addItemDecoration(
+                createDivider()
             )
         }
 
-        if (methodAdapter == null) {
-            methodAdapter = MethodAdapter(state.recipe?.method ?: emptyList())
-            binding.rvMethod.apply {
-                layoutManager = LinearLayoutManager(requireContext())
-                adapter = methodAdapter
-                setHasFixedSize(true)
-                addItemDecoration(createDivider())
-            }
-        } else {
-            methodAdapter?.updateData(state.recipe?.method ?: emptyList())
+        methodAdapter = MethodAdapter(emptyList())
+        binding.rvMethod.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = methodAdapter
+            setHasFixedSize(true)
+            addItemDecoration(createDivider())
         }
     }
 
@@ -161,7 +153,6 @@ class RecipeFragment : Fragment() {
             insets
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
