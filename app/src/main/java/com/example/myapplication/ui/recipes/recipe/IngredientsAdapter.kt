@@ -9,9 +9,8 @@ import com.example.myapplication.model.Ingredient
 
 class IngredientsAdapter(initialIngredients: List<Ingredient>) :
     RecyclerView.Adapter<IngredientsAdapter.IngredientViewHolder>() {
-    private var ingredients: List<Ingredient> = initialIngredients
+    var ingredients: List<Ingredient> = initialIngredients
     fun updateIngredients(newIngredients: List<Ingredient>) {
-        if (ingredients == newIngredients) return
         ingredients = newIngredients
         notifyDataSetChanged()
     }

@@ -19,6 +19,22 @@ import com.example.myapplication.data.INVALID_RECIPE_ID
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
+
+class PortionSeekBarListener(private var onChangeIngredients: (Int) -> Unit) :
+    SeekBar.OnSeekBarChangeListener {
+    override fun onProgressChanged(
+        seekBar: SeekBar?,
+        progress: Int,
+        fromUser: Boolean
+    ) {
+        onChangeIngredients(progress)
+    }
+
+    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+    override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+}
+
 class RecipeFragment : Fragment() {
     private var _binding: FragmentRecipeBinding? = null
     private val binding
@@ -84,15 +100,8 @@ class RecipeFragment : Fragment() {
             viewModel.onFavoritesClicked()
         }
 
-        binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                if (fromUser && progress > 0) {
-                    viewModel.setPortionsCount(progress)
-                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        binding.seekbar.setOnSeekBarChangeListener(PortionSeekBarListener { currentProgress ->
+            viewModel.setPortionsCount(currentProgress)
         })
     }
 
@@ -126,7 +135,7 @@ class RecipeFragment : Fragment() {
             )
         }
 
-        methodAdapter = MethodAdapter(emptyList())
+        methodAdapter = MethodAdapter()
         binding.rvMethod.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = methodAdapter
