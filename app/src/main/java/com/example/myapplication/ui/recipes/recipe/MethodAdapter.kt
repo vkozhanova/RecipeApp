@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemStepBinding
 
-class MethodAdapter(private var methods: List<String>) :
+class MethodAdapter() :
     RecyclerView.Adapter<MethodAdapter.StepViewHolder>() {
+        var methods: List<String> = emptyList()
 
     inner class StepViewHolder(val binding: ItemStepBinding) :
         RecyclerView.ViewHolder(binding.root)

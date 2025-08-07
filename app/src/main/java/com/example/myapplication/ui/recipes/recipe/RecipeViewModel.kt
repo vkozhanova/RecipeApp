@@ -46,13 +46,13 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
         return recipe.ingredients.map { ingredient ->
 
-                val formattedQuantity = BigDecimal(ingredient.quantity.replace(",", "."))
-                    .multiply(BigDecimal(portionsCount))
-                    .setScale(1, RoundingMode.HALF_UP)
-                    .stripTrailingZeros()
-                    .toPlainString()
+            val formattedQuantity = BigDecimal(ingredient.quantity.replace(",", "."))
+                .multiply(BigDecimal(portionsCount))
+                .setScale(1, RoundingMode.HALF_UP)
+                .stripTrailingZeros()
+                .toPlainString()
 
-                ingredient.copy(quantity = formattedQuantity)
+            ingredient.copy(quantity = formattedQuantity)
         }
     }
 
