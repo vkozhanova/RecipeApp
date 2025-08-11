@@ -1,6 +1,5 @@
 package com.example.myapplication.ui.recipes.favorites
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,14 +8,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
-import com.example.myapplication.data.FAVORITES_KEY
-import com.example.myapplication.data.PREFS_NAME
-import com.example.myapplication.data.STUB
 import com.example.myapplication.databinding.FragmentFavoritesBinding
-import com.example.myapplication.model.Recipe
 import com.example.myapplication.ui.NavigationUtils
 import com.example.myapplication.ui.recipes.recipeList.RecipesListAdapter
 
@@ -25,9 +21,7 @@ class FavoritesFragment : Fragment() {
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentFavoritesBinding must not be null")
-
-    private lateinit var adapter: RecipesListAdapter
-    private var favoriteRecipes: List<Recipe> = emptyList()
+    private val viewModel: FavoritesViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,48 +41,34 @@ class FavoritesFragment : Fragment() {
             .load(R.drawable.bcg_favorites)
             .into(binding.headerImageFavorites)
 
+        val adapter = RecipesListAdapter(emptyList()) { recipe ->
+            viewModel.onRecipeClicked(recipe.id)
+        }
+
+        binding.rvFavorites.layoutManager = LinearLayoutManager(requireContext())
+
+        binding.rvFavorites.adapter = adapter
+
+        viewModel.favoriteRecipes.observe(viewLifecycleOwner) { recipes ->
+            adapter.updateRecipes(recipes)
+            if (recipes.isEmpty()) showEmptyState() else hideEmptyState()
+        }
+
+        viewModel.navigateToRecipe.observe(viewLifecycleOwner) { recipeId ->
+            recipeId?.let {
+                NavigationUtils.openRecipeByRecipeId(this, it)
+                viewModel.resetNavigation()
+            }
+        }
+
+        viewModel.loadFavorites()
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.bcgFavorites.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = systemBars.top
             }
             insets
-        }
-
-        initRecycler()
-        loadFavoritesRecipes()
-    }
-
-    private fun initRecycler() {
-        adapter = RecipesListAdapter(
-            recipes = favoriteRecipes,
-            onItemClick = { recipe ->
-                NavigationUtils.openRecipeByRecipeId(
-                    this@FavoritesFragment,
-                    recipe.id
-                )
-            },
-        )
-
-        binding.rvFavorites.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@FavoritesFragment.adapter
-            setHasFixedSize(true)
-        }
-    }
-
-    private fun loadFavoritesRecipes() {
-        val favoriteIds = getFavorites()
-        favoriteRecipes = STUB.getRecipesByIds(favoriteIds)
-        updateUI()
-    }
-
-    private fun updateUI() {
-        adapter.updateRecipes(favoriteRecipes)
-        if (favoriteRecipes.isEmpty()) {
-            showEmptyState()
-        } else {
-            hideEmptyState()
         }
     }
 
@@ -101,21 +81,6 @@ class FavoritesFragment : Fragment() {
     private fun hideEmptyState() {
         binding.rvFavorites.visibility = View.VISIBLE
         binding.emptyStateView.visibility = View.GONE
-    }
-
-    fun saveFavorites(recipesIds: Set<Int>) {
-        val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-        sharedPrefs.edit()
-            .putStringSet(FAVORITES_KEY, recipesIds.map { it.toString() }.toSet())
-            .apply()
-    }
-
-    fun getFavorites(): Set<Int> {
-        val sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-        return sharedPrefs.getStringSet(FAVORITES_KEY, emptySet())?.mapNotNull { it.toIntOrNull() }
-            ?.toSet() ?: emptySet()
     }
 
     override fun onDestroyView() {

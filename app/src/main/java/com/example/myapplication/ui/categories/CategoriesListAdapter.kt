@@ -9,18 +9,9 @@ import com.example.myapplication.model.Category
 import com.example.myapplication.databinding.ItemCategoryBinding
 
 class CategoriesListAdapter(
-    private val categories: List<Category>
+    private var categories: List<Category>,
+    private val onItemClick: (Int) -> Unit
 ) : RecyclerView.Adapter<CategoriesListAdapter.CategoryViewHolder>() {
-
-    interface OnItemClickListener {
-        fun onItemClick(categoryId: Int)
-    }
-
-    private var itemClickListener: OnItemClickListener? = null
-
-    fun setOnItemClickListener(listener: OnItemClickListener) {
-        this.itemClickListener = listener
-    }
 
     inner class CategoryViewHolder(
         private val binding: ItemCategoryBinding
@@ -35,7 +26,7 @@ class CategoriesListAdapter(
                 .into(binding.cardImage)
 
             binding.root.setOnClickListener {
-                itemClickListener?.onItemClick(category.id)
+                onItemClick(category.id)
             }
         }
     }
@@ -60,4 +51,9 @@ class CategoriesListAdapter(
     }
 
     override fun getItemCount(): Int = categories.size
+
+    fun updateCategories(newCategories: List<Category>) {
+        categories = newCategories
+        notifyDataSetChanged()
+    }
 }
