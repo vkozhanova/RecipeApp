@@ -49,7 +49,7 @@ class FavoritesFragment : Fragment() {
 
         binding.rvFavorites.adapter = adapter
 
-        viewModel.favoriteRecipes.observe(viewLifecycleOwner) { recipes ->
+        viewModel.favoritesRecipe.observe(viewLifecycleOwner) { recipes ->
             adapter.updateRecipes(recipes)
             if (recipes.isEmpty()) showEmptyState() else hideEmptyState()
         }

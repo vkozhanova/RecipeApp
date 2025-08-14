@@ -16,6 +16,7 @@ import com.example.myapplication.data.ARG_CATEGORY_IMAGE_URL
 import com.example.myapplication.data.ARG_CATEGORY_NAME
 import com.example.myapplication.data.ASSETS_BASE_PATH
 import com.example.myapplication.databinding.FragmentListRecipesBinding
+import com.example.myapplication.model.Recipe
 import com.example.myapplication.ui.NavigationUtils
 import kotlin.getValue
 
@@ -26,6 +27,8 @@ class RecipesListFragment : Fragment() {
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentListRecipesBinding must not be null")
     private val viewModel: RecipesListViewModel by viewModels()
+
+    private lateinit var adapter: RecipesListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +42,15 @@ class RecipesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        adapter = RecipesListAdapter(emptyList()) {recipe ->
+            viewModel.onRecipeClicked(recipe.id)
+        }
+
+        binding.rvRecipes.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@RecipesListFragment.adapter
+        }
+
         val categoryId = requireArguments().getInt(ARG_CATEGORY_ID)
         val categoryName = requireArguments().getString(ARG_CATEGORY_NAME) ?: ""
         val categoryImageUrl = requireArguments().getString(ARG_CATEGORY_IMAGE_URL)
@@ -49,14 +61,8 @@ class RecipesListFragment : Fragment() {
             Glide.with(requireContext())
                 .load("${ASSETS_BASE_PATH}$fileName")
                 .into(binding.headerImage)
-        }
 
-        val adapter = RecipesListAdapter(emptyList()) { recipe ->
-            viewModel.onRecipeClicked(recipe.id)
         }
-
-        binding.rvRecipes.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvRecipes.adapter = adapter
 
         viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
             adapter.updateRecipes(recipes)
@@ -68,7 +74,6 @@ class RecipesListFragment : Fragment() {
                 viewModel.resetNavigation()
             }
         }
-
         viewModel.loadRecipes(categoryId)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
