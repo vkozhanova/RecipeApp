@@ -1,11 +1,12 @@
 package com.example.myapplication.data
 
+import android.util.Log
 import com.example.myapplication.model.Category
 import com.example.myapplication.model.Ingredient
 import com.example.myapplication.model.Recipe
 
 object STUB {
-    private val burgerRecipes = listOf(
+    val burgerRecipes = listOf(
         Recipe(
             id = 0,
             title = "Классический гамбургер",
@@ -277,6 +278,11 @@ object STUB {
     }
 
     fun getRecipesByIds(ids: Set<Int>): List<Recipe> {
-        return burgerRecipes.filter { it.id in ids }
+        Log.d("STUB", "Filtering recipes for IDs: $ids")
+        return burgerRecipes.filter { recipe ->
+            ids.contains(recipe.id).also { contains ->
+                Log.d("STUB", "Recipe ${recipe.id} in $ids: $contains")
+            }
+        }
     }
 }

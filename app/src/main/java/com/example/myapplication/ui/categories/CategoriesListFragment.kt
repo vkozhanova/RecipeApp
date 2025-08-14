@@ -17,13 +17,17 @@ import com.example.myapplication.R
 import com.example.myapplication.data.STUB
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.viewModels
 import com.example.myapplication.ui.recipes.recipeList.RecipesListFragment
+import kotlin.getValue
 
 class CategoriesListFragment : Fragment() {
     private var _binding: FragmentListCategoriesBinding? = null
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentListCategoriesBinding must not be null")
+
+    private val viewModel: CategoryListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,22 +38,39 @@ class CategoriesListFragment : Fragment() {
         return binding.root
     }
 
-    fun initRecycler() {
-        val categories = STUB.getCategories()
-        val adapter = CategoriesListAdapter(categories)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        adapter.setOnItemClickListener(object : CategoriesListAdapter.OnItemClickListener {
-            override fun onItemClick(categoryId: Int) {
-                openRecipesByCategoryId(categoryId)
-            }
-        })
-        binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
+        val adapter = CategoriesListAdapter(emptyList()) { categoryId ->
+            viewModel.onCategorySelected(categoryId)
+        }
+
         binding.rvCategories.adapter = adapter
+
+        binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
+
+        viewModel.categories.observe(viewLifecycleOwner) { categories ->
+            adapter.updateCategories(categories)
+        }
+
+        viewModel.navigateToRecipes.observe(viewLifecycleOwner) { categoryId ->
+            categoryId?.let {
+                openRecipesByCategoryId(it)
+                viewModel.onNavigationComplete()
+            }
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.bcgCategories.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
+            insets
+        }
     }
 
-    private fun openRecipesByCategoryId(categoryId: Int) {
+    fun openRecipesByCategoryId(categoryId: Int) {
         val category = STUB.getCategories().find { it.id == categoryId }
-
         val categoryName = category?.title ?: ""
         val categoryImageUrl = category?.imageUrl ?: ""
 
@@ -65,21 +86,8 @@ class CategoriesListFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.bcgCategories.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = systemBars.top
-            }
-            insets
-        }
-            initRecycler()
-        }
-
-        override fun onDestroyView() {
-            super.onDestroyView()
-            _binding = null
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
+}

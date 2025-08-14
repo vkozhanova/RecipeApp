@@ -45,6 +45,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.glide)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.fragment.ktx)
