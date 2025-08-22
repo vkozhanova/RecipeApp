@@ -95,7 +95,9 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun getFavorites(): Set<String> {
-        return sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
+        val favorites = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
+        Log.d("Favorites", "Loaded favorites: $favorites")
+        return favorites
     }
 
     fun onFavoritesClicked() {
@@ -103,9 +105,9 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         val recipeId = currentState.recipe?.id ?: return
         val newFavoriteState = !currentState.isFavorite
 
-        updateFavorites(recipeId, newFavoriteState)
-
         _state.value = currentState.copy(isFavorite = newFavoriteState)
+
+        updateFavorites(recipeId, newFavoriteState)
     }
 
     fun updateFavorites(recipeId: Int, isFavorite: Boolean) {
@@ -116,6 +118,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun saveFavorites(favorites: Set<String>) {
+        Log.d("Favorites", "Saving favorites: $favorites")
         sharedPrefs.edit()
             .putStringSet(FAVORITES_KEY, favorites)
             .apply()

@@ -19,7 +19,6 @@ import com.example.myapplication.data.INVALID_RECIPE_ID
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
-
 class PortionSeekBarListener(private var onChangeIngredients: (Int) -> Unit) :
     SeekBar.OnSeekBarChangeListener {
     override fun onProgressChanged(
@@ -92,6 +91,7 @@ class RecipeFragment : Fragment() {
             }
 
             updateFavoriteIcon(state.isFavorite)
+            Log.d("RecipeFragment", "Favorite state: ${state.isFavorite}")
 
             updatePortionsUI(state.portionsCount)
         }
