@@ -53,6 +53,8 @@ class CategoriesListAdapter(
     override fun getItemCount(): Int = categories.size
 
     fun updateCategories(newCategories: List<Category>) {
+        println("Updating categories: ${newCategories.size} items")
+        newCategories.forEach { println("Category: ${it.title} (ID: ${it.id})") }
         categories = newCategories
         notifyDataSetChanged()
     }

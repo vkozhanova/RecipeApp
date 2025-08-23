@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.data.ARG_RECIPE
@@ -40,8 +41,8 @@ class RecipeFragment : Fragment() {
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentRecipeBinding must not be null")
     private val viewModel: RecipeViewModel by viewModels()
+    private val args: RecipeFragmentArgs by navArgs()
     private var ingredientsAdapter: IngredientsAdapter? = null
-
     private var methodAdapter: MethodAdapter? = null
 
     override fun onCreateView(
@@ -60,7 +61,7 @@ class RecipeFragment : Fragment() {
     }
 
     private fun initUI() {
-        val recipeId = arguments?.getInt(ARG_RECIPE) ?: INVALID_RECIPE_ID
+        val recipeId = args.recipeId
         Log.d("RecipeFragment", "Initializing UI for recipe ID: $recipeId")
 
         if (recipeId == INVALID_RECIPE_ID) {

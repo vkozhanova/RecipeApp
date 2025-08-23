@@ -9,6 +9,8 @@ import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.ui.categories.CategoriesListFragment
 import com.example.myapplication.ui.recipes.favorites.FavoritesFragment
 import androidx.fragment.app.replace
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.myapplication.R
 
 class MainActivity : AppCompatActivity() {
@@ -18,41 +20,30 @@ class MainActivity : AppCompatActivity() {
         get() = _binding
             ?: throw IllegalStateException("Binding for ActivityMainBinding must not be null")
 
+    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (savedInstanceState == null) {
-            initFirstFragment()
-        }
         initNavigation()
     }
 
-    private fun initFirstFragment() {
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<CategoriesListFragment>(R.id.mainContainer)
-        }
-    }
-
     private fun initNavigation() {
-        binding.btnCategories.setOnClickListener {
-            showFragment<CategoriesListFragment>()
-        }
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
+        navController = navHostFragment.navController
+
         binding.btnFavorites.setOnClickListener {
-            showFragment<FavoritesFragment>()
+              navController.navigate(R.id.favoritesFragment)
         }
+
+        binding.btnCategories.setOnClickListener {
+            navController.navigate(R.id.categoriesListFragment)}
     }
 
-    private inline fun <reified T : Fragment> showFragment() {
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<T>(R.id.mainContainer)
-            addToBackStack(null)
-        }
-    }
 
     override fun onDestroy() {
         super.onDestroy()

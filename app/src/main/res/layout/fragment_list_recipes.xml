@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/background_gray_color"
     android:clipToPadding="false"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.recipes.recipeList.RecipesListFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bcg_recipes"
