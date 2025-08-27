@@ -9,11 +9,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentFavoritesBinding
-import com.example.myapplication.ui.NavigationUtils
 import com.example.myapplication.ui.recipes.recipeList.RecipesListAdapter
 
 class FavoritesFragment : Fragment() {
@@ -45,9 +45,10 @@ class FavoritesFragment : Fragment() {
             viewModel.onRecipeClicked(recipe.id)
         }
 
-        binding.rvFavorites.layoutManager = LinearLayoutManager(requireContext())
-
-        binding.rvFavorites.adapter = adapter
+        binding.rvFavorites.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            this.adapter = adapter
+        }
 
         viewModel.favoritesRecipe.observe(viewLifecycleOwner) { recipes ->
             adapter.updateRecipes(recipes)
@@ -56,8 +57,13 @@ class FavoritesFragment : Fragment() {
 
         viewModel.navigateToRecipe.observe(viewLifecycleOwner) { recipeId ->
             recipeId?.let {
-                NavigationUtils.openRecipeByRecipeId(this, it)
-                viewModel.resetNavigation()
+                val direction = FavoritesFragmentDirections.actionFavoritesFragmentToRecipeFragment(recipeId = it)
+                try {
+                    findNavController().navigate(direction)
+                    viewModel.resetNavigation()
+                } catch (e: Exception) {
+                    viewModel.resetNavigation()
+                }
             }
         }
 

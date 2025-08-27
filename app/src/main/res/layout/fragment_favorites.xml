@@ -5,13 +5,15 @@
     android:layout_height="match_parent"
     android:background="@color/background_gray_color"
     android:clipToPadding="false"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.recipes.favorites.FavoritesFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bcg_favorites"
         android:layout_width="match_parent"
         android:layout_height="@dimen/header_height"
-        android:background="@android:color/transparent">
+        android:background="@android:color/transparent"
+        tools:layout="@layout/fragment_favorites" >
 
         <ImageView
             android:id="@+id/header_image_favorites"

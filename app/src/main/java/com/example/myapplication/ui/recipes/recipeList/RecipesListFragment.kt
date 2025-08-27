@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.recipes.recipeList
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.myapplication.data.ARG_CATEGORY_ID
@@ -17,7 +20,6 @@ import com.example.myapplication.data.ARG_CATEGORY_NAME
 import com.example.myapplication.data.ASSETS_BASE_PATH
 import com.example.myapplication.databinding.FragmentListRecipesBinding
 import com.example.myapplication.model.Recipe
-import com.example.myapplication.ui.NavigationUtils
 import kotlin.getValue
 
 
@@ -27,7 +29,7 @@ class RecipesListFragment : Fragment() {
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentListRecipesBinding must not be null")
     private val viewModel: RecipesListViewModel by viewModels()
-
+    private val args: RecipesListFragmentArgs by navArgs()
     private lateinit var adapter: RecipesListAdapter
 
     override fun onCreateView(
@@ -51,13 +53,13 @@ class RecipesListFragment : Fragment() {
             adapter = this@RecipesListFragment.adapter
         }
 
-        val categoryId = requireArguments().getInt(ARG_CATEGORY_ID)
-        val categoryName = requireArguments().getString(ARG_CATEGORY_NAME) ?: ""
-        val categoryImageUrl = requireArguments().getString(ARG_CATEGORY_IMAGE_URL)
+        val categoryId = args.categoryId
+        val categoryName = args.categoryName
+        val categoryImageUrl = args.categoryImageUrl
 
         binding.titleText.text = categoryName
 
-        categoryImageUrl?.let { fileName ->
+        categoryImageUrl.let { fileName ->
             Glide.with(requireContext())
                 .load("${ASSETS_BASE_PATH}$fileName")
                 .into(binding.headerImage)
@@ -70,7 +72,8 @@ class RecipesListFragment : Fragment() {
 
         viewModel.navigateToId.observe(viewLifecycleOwner) { recipeId ->
             recipeId?.let {
-                NavigationUtils.openRecipeByRecipeId(this, it)
+                val direction = RecipesListFragmentDirections.actionRecipesListFragmentToRecipeFragment(recipeId = it)
+                findNavController().navigate(direction)
                 viewModel.resetNavigation()
             }
         }
