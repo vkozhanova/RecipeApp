@@ -16,6 +16,7 @@ import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentFavoritesBinding
 import com.example.myapplication.ui.recipes.recipeList.RecipesListAdapter
 
+
 class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding
@@ -57,7 +58,8 @@ class FavoritesFragment : Fragment() {
 
         viewModel.navigateToRecipe.observe(viewLifecycleOwner) { recipeId ->
             recipeId?.let {
-                val direction = FavoritesFragmentDirections.actionFavoritesFragmentToRecipeFragment(recipeId = it)
+                val direction =
+                    FavoritesFragmentDirections.actionFavoritesFragmentToRecipeFragment(recipeId = it)
                 try {
                     findNavController().navigate(direction)
                     viewModel.resetNavigation()

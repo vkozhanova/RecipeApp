@@ -1,7 +1,7 @@
 package com.example.myapplication.ui.recipes.recipeList
 
 import android.os.Bundle
-import android.util.Log
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +14,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.myapplication.data.ARG_CATEGORY_ID
-import com.example.myapplication.data.ARG_CATEGORY_IMAGE_URL
-import com.example.myapplication.data.ARG_CATEGORY_NAME
 import com.example.myapplication.data.ASSETS_BASE_PATH
 import com.example.myapplication.databinding.FragmentListRecipesBinding
-import com.example.myapplication.model.Recipe
 import kotlin.getValue
 
 
@@ -44,7 +40,7 @@ class RecipesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = RecipesListAdapter(emptyList()) {recipe ->
+        adapter = RecipesListAdapter(emptyList()) { recipe ->
             viewModel.onRecipeClicked(recipe.id)
         }
 
@@ -72,7 +68,8 @@ class RecipesListFragment : Fragment() {
 
         viewModel.navigateToId.observe(viewLifecycleOwner) { recipeId ->
             recipeId?.let {
-                val direction = RecipesListFragmentDirections.actionRecipesListFragmentToRecipeFragment(recipeId = it)
+                val direction =
+                    RecipesListFragmentDirections.actionRecipesListFragmentToRecipeFragment(recipeId = it)
                 findNavController().navigate(direction)
                 viewModel.resetNavigation()
             }
