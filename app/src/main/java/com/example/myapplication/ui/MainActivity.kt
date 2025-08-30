@@ -3,12 +3,7 @@ package com.example.myapplication.ui
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import com.example.myapplication.databinding.ActivityMainBinding
-import com.example.myapplication.ui.categories.CategoriesListFragment
-import com.example.myapplication.ui.recipes.favorites.FavoritesFragment
-import androidx.fragment.app.replace
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.myapplication.R

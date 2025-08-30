@@ -45,10 +45,10 @@ android {
 dependencies {
 
     val nav_version = "2.9.3"
+
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
-
     implementation(libs.glide)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.fragment.ktx)
@@ -58,7 +58,6 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.cardview)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

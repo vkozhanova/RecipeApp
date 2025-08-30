@@ -42,6 +42,7 @@
         <action
             android:id="@+id/action_recipesListFragment_to_recipeFragment"
             app:destination="@id/recipeFragment">
+
             <argument
                 android:name="recipeId"
                 app:argType="integer" />
@@ -65,6 +66,7 @@
         <action
             android:id="@+id/action_favoritesFragment_to_recipeFragment"
             app:destination="@id/recipeFragment">
+
             <argument
                 android:name="recipeId"
                 app:argType="integer" />
