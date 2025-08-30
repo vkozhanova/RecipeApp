@@ -228,7 +228,7 @@ object STUB {
         )
     )
 
-    private val categories = listOf(
+    val categories = listOf(
         Category(
             id = 0,
             title = "Бургеры",
@@ -266,8 +266,6 @@ object STUB {
             imageUrl = "salad.png"
         ),
     )
-
-    fun getCategories(): List<Category> = categories
 
     fun getRecipesByCategoryId(categoryId: Int): List<Recipe> {
         return if (categoryId == 0) burgerRecipes else emptyList()

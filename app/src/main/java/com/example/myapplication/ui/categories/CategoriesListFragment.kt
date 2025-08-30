@@ -13,6 +13,7 @@ import com.example.myapplication.databinding.FragmentListCategoriesBinding
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import java.lang.IllegalArgumentException
 import kotlin.getValue
 
 class CategoriesListFragment : Fragment() {
@@ -65,15 +66,15 @@ class CategoriesListFragment : Fragment() {
     }
 
    private fun openRecipesByCategoryId(categoryId: Int) {
-        val category = STUB.getCategories().find { it.id == categoryId }
-        val categoryName = category?.title ?: ""
-        val categoryImageUrl = category?.imageUrl ?: ""
+       val category = STUB.categories.find { it.id == categoryId }
+
+       if (category == null) {
+           throw IllegalArgumentException("Category with id $categoryId not found")
+       }
 
         val direction = CategoriesListFragmentDirections
             .actionCategoriesListFragmentToRecipesListFragment(
-            categoryId = categoryId,
-            categoryName = categoryName,
-            categoryImageUrl = categoryImageUrl
+            category = category
         )
 
         findNavController().navigate(direction)
