@@ -10,9 +10,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.myapplication.R
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Runnable
-import kotlinx.serialization.Serializable
 import java.net.HttpURLConnection
 import java.net.URL
 
