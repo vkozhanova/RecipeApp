@@ -46,6 +46,7 @@ dependencies {
 
     val nav_version = "2.9.3"
 
+    implementation(libs.gson)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
