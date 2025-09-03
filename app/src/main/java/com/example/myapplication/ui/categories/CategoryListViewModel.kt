@@ -21,7 +21,7 @@ class CategoryListViewModel : ViewModel() {
     }
 
     fun loadCategories() {
-        _categories.value = STUB.getCategories()
+        _categories.value = STUB.categories
     }
 
     fun onCategorySelected(categoryId: Int) {

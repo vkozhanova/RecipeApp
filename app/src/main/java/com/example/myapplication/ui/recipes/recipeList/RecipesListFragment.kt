@@ -40,6 +40,8 @@ class RecipesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val category = args.category
+
         adapter = RecipesListAdapter(emptyList()) { recipe ->
             viewModel.onRecipeClicked(recipe.id)
         }
@@ -49,13 +51,9 @@ class RecipesListFragment : Fragment() {
             adapter = this@RecipesListFragment.adapter
         }
 
-        val categoryId = args.categoryId
-        val categoryName = args.categoryName
-        val categoryImageUrl = args.categoryImageUrl
+        binding.titleText.text = category.title
 
-        binding.titleText.text = categoryName
-
-        categoryImageUrl.let { fileName ->
+        category.imageUrl.let { fileName ->
             Glide.with(requireContext())
                 .load("${ASSETS_BASE_PATH}$fileName")
                 .into(binding.headerImage)
@@ -74,7 +72,7 @@ class RecipesListFragment : Fragment() {
                 viewModel.resetNavigation()
             }
         }
-        viewModel.loadRecipes(categoryId)
+        viewModel.loadRecipes(category.id)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
