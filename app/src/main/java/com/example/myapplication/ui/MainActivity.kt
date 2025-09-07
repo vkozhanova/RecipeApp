@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
     private fun getRecipesByIds(categoryIds: List<Int>) {
 
         if (categoryIds.isEmpty()) {
-            Log.i("!!!", "Список Id категорий пуст")
+            Log.i("!!!", "Список ID категорий пуст")
             return
         }
 
