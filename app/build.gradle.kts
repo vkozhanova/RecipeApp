@@ -46,6 +46,8 @@ dependencies {
 
     val nav_version = "2.9.3"
 
+    implementation(libs.okhttp.v4120)
+    implementation(libs.logging.interceptor.v4120)
     implementation(libs.gson)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.fragment)
