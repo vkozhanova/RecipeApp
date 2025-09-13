@@ -11,10 +11,11 @@ import com.example.myapplication.R
 import com.example.myapplication.model.Ingredient
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import java.net.HttpURLConnection
-import java.net.URL
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
+import okhttp3.logging.HttpLoggingInterceptor
 
 data class Category(
     @SerializedName("id")
@@ -37,9 +38,8 @@ data class Recipe(
     @SerializedName("method")
     val method: List<String>,
     @SerializedName("imageUrl")
-    val imageUrl: String,
-
-    )
+    val imageUrl: String
+)
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,7 +50,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private val gson = Gson()
-    val threadPool = Executors.newFixedThreadPool(10)
+    private val threadPool = Executors.newFixedThreadPool(10)
+    private val client: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }).build()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,27 +68,37 @@ class MainActivity : AppCompatActivity() {
 
         Log.i("!!!", "Метод onCreate() выполняется на потоке: ${Thread.currentThread().name}")
 
-        Thread {
+        threadPool.execute {
             try {
-                val url = URL("https://recipes.androidsprint.ru/api/category")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.connect()
+                val request: Request = Request.Builder()
+                    .url("https://recipes.androidsprint.ru/api/category")
+                    .build()
 
-                val jsonString = connection.inputStream.bufferedReader().readText()
-                Log.i("!!!", "Body: $jsonString")
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        throw Exception("Ошибка запроса $response")
+                    }
 
-                val categories = gson.fromJson(jsonString, Array<Category>::class.java).toList()
+                    val responseBody = response.body?.string()
+                    Log.i("!!!", "Body: $responseBody")
 
-                val categoryIds = categories.map { it.id }
-                Log.i("!!!", "Список категорий: $categoryIds")
+                    if (responseBody != null) {
+                        val categories =
+                            gson.fromJson(responseBody, Array<Category>::class.java).toList()
 
-                getRecipesByIds(categoryIds)
+                        val categoryIds = categories.map { it.id }
+                        Log.i("!!!", "Список категорий: $categoryIds")
 
+                        getRecipesByIds(categoryIds)
+                    } else {
+                        Log.e("!!!", "Response body is null")
+                    }
+                }
                 Log.i("!!!", "Выполняю запрос на потоке: ${Thread.currentThread().name}")
             } catch (e: Exception) {
-                Log.i("!!!", "Ошибка при загрузке категорий", e)
+                Log.e("!!!", "Ошибка при загрузке категорий", e)
             }
-        }.start()
+        }
     }
 
     private fun getRecipesByIds(categoryIds: List<Int>) {
@@ -97,20 +113,26 @@ class MainActivity : AppCompatActivity() {
         categoryIds.forEach { categoryId ->
             threadPool.execute {
                 try {
+                    val request = Request.Builder()
+                        .url("https://recipes.androidsprint.ru/api/category/$categoryId/recipes")
+                        .build()
 
-                    val url = URL("https://recipes.androidsprint.ru/api/category/$categoryId/recipes")
+                    client.newCall(request).execute().use { response ->
+                        if (!response.isSuccessful) {
+                            throw Exception("Ошибка запроса $response")
+                        }
 
-                    val connection = url.openConnection() as HttpURLConnection
-                    connection.connect()
+                        val jsonString = response.body?.string()
 
-                    val jsonString = connection.inputStream.bufferedReader().readText()
+                        val recipes = gson.fromJson(jsonString, Array<Recipe>::class.java).toList()
 
-                    val recipes =
-                        gson.fromJson(jsonString, Array<Recipe>::class.java).toList()
-
-                    recipes.forEach { recipe ->
-                        Log.i("!!!", "Рецепт ${recipe.title} (ID: ${recipe.id}) из категории ${categoryId}")
-                        Log.i("!!!", "----")
+                        recipes.forEach { recipe ->
+                            Log.i(
+                                "!!!",
+                                "Рецепт ${recipe.title} (ID: ${recipe.id}) из категории ${categoryId}"
+                            )
+                            Log.i("!!!", "----")
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e(
