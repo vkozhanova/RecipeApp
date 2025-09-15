@@ -1,7 +1,5 @@
 package com.example.myapplication.ui.categories
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +12,7 @@ class CategoryListViewModel : ViewModel() {
     val categories: LiveData<List<Category>>
         get() = _categories
 
-    private  val _error = MutableLiveData<String?>()
+    private val _error = MutableLiveData<String?>()
 
     val error: LiveData<String?>
         get() = _error
@@ -25,7 +23,7 @@ class CategoryListViewModel : ViewModel() {
 
     val repository = RecipesRepository()
 
-    private val executor  = Executors.newSingleThreadExecutor()
+    private val executor = Executors.newSingleThreadExecutor()
 
     init {
         loadCategories()
@@ -36,12 +34,12 @@ class CategoryListViewModel : ViewModel() {
         executor.execute {
             try {
                 val categories = repository.getCategories()
-                if(categories != null) {
+                if (categories != null) {
                     _categories.postValue(categories)
                 } else {
                     _error.postValue("Ошибка при получении данных")
                 }
-            } catch ( e: Exception) {
+            } catch (e: Exception) {
                 _error.postValue("Ошибка при получении данных")
             }
         }

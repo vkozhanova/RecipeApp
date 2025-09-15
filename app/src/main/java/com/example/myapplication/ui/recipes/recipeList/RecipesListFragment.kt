@@ -2,7 +2,6 @@ package com.example.myapplication.ui.recipes.recipeList
 
 import android.os.Bundle
 import android.util.Log
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,7 +67,7 @@ class RecipesListFragment : Fragment() {
             }
         }
 
-        viewModel.error.observe(viewLifecycleOwner) {errorMessage ->
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                 viewModel.clearError()

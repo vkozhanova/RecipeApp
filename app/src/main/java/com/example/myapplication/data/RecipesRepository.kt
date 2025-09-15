@@ -11,9 +11,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.create
 
-class RecipesRepository () {
+class RecipesRepository() {
     private val apiService: RecipeApiService
 
     init {
@@ -53,7 +52,7 @@ class RecipesRepository () {
     }
 
     private fun <T> executeCall(call: Call<T>): T? {
-        return try{
+        return try {
             val response: Response<T> = call.execute()
             if (response.isSuccessful) {
                 response.body()

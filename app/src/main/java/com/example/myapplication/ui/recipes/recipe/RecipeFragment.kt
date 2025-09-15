@@ -101,7 +101,7 @@ class RecipeFragment : Fragment() {
             updatePortionsUI(state.portionsCount)
         }
 
-        viewModel.error.observe(viewLifecycleOwner) {errorMessage ->
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                 viewModel.clearError()

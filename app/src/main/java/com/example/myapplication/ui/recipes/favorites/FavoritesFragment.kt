@@ -57,7 +57,7 @@ class FavoritesFragment : Fragment() {
             if (recipes.isEmpty()) showEmptyState() else hideEmptyState()
         }
 
-        viewModel.error.observe(viewLifecycleOwner) {errorMessage ->
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                 viewModel.clearError()

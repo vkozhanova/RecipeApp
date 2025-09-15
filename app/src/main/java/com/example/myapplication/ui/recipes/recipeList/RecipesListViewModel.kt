@@ -27,12 +27,11 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     val error: LiveData<String?> = state.map { it.error }
 
 
-
     data class RecipeListState(
         val recipes: List<Recipe> = emptyList(),
         val category: Category? = null,
         val navigateToId: Int? = null,
-        val  error:  String? = null
+        val error: String? = null
     )
 
     fun loadRecipes(categoryId: Int) {
@@ -40,7 +39,7 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
             try {
                 val recipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
 
-                val category = repository.getCategories()?.find {it.id == categoryId}
+                val category = repository.getCategories()?.find { it.id == categoryId }
 
                 _state.postValue(
                     _state.value?.copy(

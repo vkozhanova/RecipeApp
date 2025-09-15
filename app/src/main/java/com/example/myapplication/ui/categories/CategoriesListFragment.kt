@@ -13,7 +13,6 @@ import com.example.myapplication.databinding.FragmentListCategoriesBinding
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import java.lang.IllegalArgumentException
 import kotlin.getValue
 
 class CategoriesListFragment : Fragment() {

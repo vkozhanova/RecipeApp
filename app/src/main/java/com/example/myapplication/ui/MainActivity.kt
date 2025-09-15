@@ -2,44 +2,16 @@ package com.example.myapplication.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.util.Log.e
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.myapplication.R
-import com.example.myapplication.data.RecipeApiService
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.databinding.ActivityMainBinding
-import com.example.myapplication.model.Category
-import com.example.myapplication.model.Ingredient
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Retrofit
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 
-data class Recipe(
-    @SerializedName("id")
-    val id: Int,
-    @SerializedName("title")
-    val title: String,
-    @SerializedName("ingredients")
-    val ingredients: List<Ingredient>,
-    @SerializedName("method")
-    val method: List<String>,
-    @SerializedName("imageUrl")
-    val imageUrl: String
-)
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         threadPool.execute {
             try {
-                    val categories = repository.getCategories()
+                val categories = repository.getCategories()
                 if (categories != null) {
                     Log.i("!!!", "categories: $categories")
 
@@ -87,6 +59,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun getRecipesByCategoryIds(categoryIds: List<Int>) {
 
         if (categoryIds.isEmpty()) {
@@ -100,12 +73,12 @@ class MainActivity : AppCompatActivity() {
                     val recipes = repository.getRecipesByCategoryId(categoryId)
 
                     recipes?.forEach { recipe ->
-                            Log.i(
-                                "!!!",
-                                "Рецепт ${recipe.title} (ID: ${recipe.id}) из категории ${categoryId}"
-                            )
-                            Log.i("!!!", "----")
-                        }
+                        Log.i(
+                            "!!!",
+                            "Рецепт ${recipe.title} (ID: ${recipe.id}) из категории ${categoryId}"
+                        )
+                        Log.i("!!!", "----")
+                    }
                 } catch (e: Exception) {
                     Log.e(
                         "!!!",
