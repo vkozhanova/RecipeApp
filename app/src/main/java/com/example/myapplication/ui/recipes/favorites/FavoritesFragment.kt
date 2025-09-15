@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -54,6 +55,13 @@ class FavoritesFragment : Fragment() {
         viewModel.favoritesRecipe.observe(viewLifecycleOwner) { recipes ->
             adapter.updateRecipes(recipes)
             if (recipes.isEmpty()) showEmptyState() else hideEmptyState()
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) {errorMessage ->
+            errorMessage?.let {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                viewModel.clearError()
+            }
         }
 
         viewModel.navigateToRecipe.observe(viewLifecycleOwner) { recipeId ->

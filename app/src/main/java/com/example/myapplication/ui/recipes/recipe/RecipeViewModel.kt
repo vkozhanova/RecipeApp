@@ -10,13 +10,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.myapplication.data.FAVORITES_KEY
 import com.example.myapplication.data.PREFS_NAME
-import com.example.myapplication.data.STUB
+import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Ingredient
 import com.example.myapplication.model.Recipe
 import java.io.IOException
 import java.io.InputStream
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.concurrent.Executors
 
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPrefs = getApplication<Application>()
@@ -25,18 +26,23 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     val state: LiveData<RecipeState>
         get() = _state
 
-    private var currentRecipeId: Int = -1
+    private val _error = MutableLiveData<String?>()
+
+    val error: LiveData<String?>
+        get() = _error
+
+    private val executor = Executors.newSingleThreadExecutor()
+
+    private val repository = RecipesRepository()
 
     init {
         Log.i("RecipeViewModel", "VIEWMODEL INITIALIZED")
         _state.value = RecipeState()
     }
-
     data class RecipeState(
         val recipe: Recipe? = null,
         val isFavorite: Boolean = false,
-        val portionsCount: Int = 1,
-        val recipeImage: Drawable? = null,
+        val portionsCount: Int = 1
     )
 
     fun getAdjustedIngredients(): List<Ingredient> {
@@ -57,42 +63,31 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun loadRecipe(recipeId: Int) {
-        //TODO(Загрузить рецепт по id из сети или базы данных)
-        if (currentRecipeId == recipeId) return
+        executor.execute {
+            try {
 
-        currentRecipeId = recipeId
-        Log.d("RecipeViewModel", "Loading recipe ID: $recipeId")
+                val recipe = repository.getRecipeById(recipeId)
+                Log.d("RecipeViewModel", "Recipe found: ${recipe?.title ?: "null"}")
 
-        val recipe = STUB.getRecipeById(recipeId)
-        Log.d("RecipeViewModel", "Recipe found: ${recipe?.title ?: "null"}")
+                val isFavorite = getFavorites().contains(recipeId.toString())
 
-        val isFavorite = getFavorites().contains(recipeId.toString())
+                val currentState = state.value ?: RecipeState()
 
-        val currentState = state.value ?: RecipeState()
-
-        val recipeImage = recipe?.imageUrl?.let { imageName ->
-            loadImageFromAssets(imageName)
-        }
-
-        _state.value = currentState.copy(
-            recipe = recipe,
-            isFavorite = isFavorite,
-            recipeImage = recipeImage,
-            portionsCount = currentState.portionsCount
-        )
-    }
-
-    private fun loadImageFromAssets(imageName: String): Drawable? {
-        return try {
-            val inputStream: InputStream = getApplication<Application>().assets.open(imageName)
-            Drawable.createFromStream(inputStream, null).apply {
-                inputStream.close()
+                if (recipe != null) {
+                    _state.postValue(currentState.copy(
+                        recipe = recipe,
+                        isFavorite = isFavorite,
+                        portionsCount = currentState.portionsCount
+                    ))
+                }  else {
+                    _error.postValue("Ошибка при получении данных")
+                }
+            } catch (e: Exception) {
+                _error.postValue("Ошибка при получении данных")
             }
-        } catch (e: IOException) {
-            Log.e("RecipeViewModel", "Error loading image: ${e.message}", e)
-            null
         }
     }
+
 
     fun getFavorites(): Set<String> {
         val favorites = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
@@ -128,5 +123,14 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         val currentState = state.value ?: return
 
         _state.value = currentState.copy(portionsCount = count)
+    }
+
+    fun clearError() {
+        _error.value = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        executor.shutdown()
     }
 }

@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.recipes.recipeList
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
@@ -21,6 +22,8 @@ class RecipesListAdapter(
 
         fun bind(recipe: Recipe) {
             binding.recipeTitle.text = recipe.title
+
+            Log.d("Adapter", "Recipe imageUrl = ${recipe.imageUrl}")
 
             Glide.with(binding.root.context)
                 .load("${ASSETS_BASE_PATH}${recipe.imageUrl}")

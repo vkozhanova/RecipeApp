@@ -5,23 +5,47 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.data.STUB
+import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Category
+import java.util.concurrent.Executors
 
 class CategoryListViewModel : ViewModel() {
     private val _categories = MutableLiveData<List<Category>>()
     val categories: LiveData<List<Category>>
         get() = _categories
+
+    private  val _error = MutableLiveData<String?>()
+
+    val error: LiveData<String?>
+        get() = _error
+
     private val _navigateToRecipes = MutableLiveData<Int?>()
     val navigateToRecipes: LiveData<Int?>
         get() = _navigateToRecipes
+
+    val repository = RecipesRepository()
+
+    private val executor  = Executors.newSingleThreadExecutor()
 
     init {
         loadCategories()
     }
 
     fun loadCategories() {
-        _categories.value = STUB.categories
+
+        executor.execute {
+            try {
+                val categories = repository.getCategories()
+                if(categories != null) {
+                    _categories.postValue(categories)
+                } else {
+                    _error.postValue("Ошибка при получении данных")
+                }
+            } catch ( e: Exception) {
+                _error.postValue("Ошибка при получении данных")
+            }
+        }
+
     }
 
     fun onCategorySelected(categoryId: Int) {
@@ -30,5 +54,14 @@ class CategoryListViewModel : ViewModel() {
 
     fun onNavigationComplete() {
         _navigateToRecipes.value = null
+    }
+
+    fun clearError() {
+        _error.value = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        executor.shutdown()
     }
 }

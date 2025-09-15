@@ -5,26 +5,57 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import com.example.myapplication.data.STUB
+import com.example.myapplication.data.RecipesRepository
+import com.example.myapplication.model.Category
 import com.example.myapplication.model.Recipe
+import java.util.concurrent.Executors
 
 class RecipesListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _state = MutableLiveData(RecipeListState())
-    val state:LiveData<RecipeListState>
+    val state: LiveData<RecipeListState>
         get() = _state
+
+    private val repository = RecipesRepository()
+    private val executor = Executors.newSingleThreadExecutor()
 
     val recipes: LiveData<List<Recipe>> = state.map { it.recipes }
     val navigateToId: LiveData<Int?> = state.map { it.navigateToId }
 
+    val category: LiveData<Category?> = state.map { it.category }
+
+    val error: LiveData<String?> = state.map { it.error }
+
+
+
     data class RecipeListState(
         val recipes: List<Recipe> = emptyList(),
-        val navigateToId: Int? = null
+        val category: Category? = null,
+        val navigateToId: Int? = null,
+        val  error:  String? = null
     )
+
     fun loadRecipes(categoryId: Int) {
-        _state.value = _state.value?.copy(
-            recipes = STUB.getRecipesByCategoryId(categoryId)
-        )
+        executor.execute {
+            try {
+                val recipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
+
+                val category = repository.getCategories()?.find {it.id == categoryId}
+
+                _state.postValue(
+                    _state.value?.copy(
+                        recipes = recipes,
+                        category = category,
+                        error = null
+                    )
+                )
+
+            } catch (e: Exception) {
+                _state.postValue(
+                    _state.value?.copy(error = e.message ?: "Ошибка при получении данных")
+                )
+            }
+        }
     }
 
     fun onRecipeClicked(recipeId: Int) {
@@ -37,5 +68,14 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
         _state.value = _state.value?.copy(
             navigateToId = null
         )
+    }
+
+    fun clearError() {
+        _state.value = _state.value?.copy(error = null)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        executor.shutdown()
     }
 }
