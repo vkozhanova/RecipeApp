@@ -2,44 +2,15 @@ package com.example.myapplication.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.databinding.ActivityMainBinding
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.myapplication.R
-import com.example.myapplication.model.Ingredient
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.util.concurrent.CountDownLatch
+import com.example.myapplication.data.RecipesRepository
+import com.example.myapplication.databinding.ActivityMainBinding
 import java.util.concurrent.Executors
-import okhttp3.logging.HttpLoggingInterceptor
-
-data class Category(
-    @SerializedName("id")
-    val id: Int,
-    @SerializedName("title")
-    val title: String,
-    @SerializedName("description")
-    val description: String,
-    @SerializedName("imageUrl")
-    val imageUrl: String
-)
-
-data class Recipe(
-    @SerializedName("id")
-    val id: Int,
-    @SerializedName("title")
-    val title: String,
-    @SerializedName("ingredients")
-    val ingredients: List<Ingredient>,
-    @SerializedName("method")
-    val method: List<String>,
-    @SerializedName("imageUrl")
-    val imageUrl: String
-)
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,14 +20,7 @@ class MainActivity : AppCompatActivity() {
             ?: throw IllegalStateException("Binding for ActivityMainBinding must not be null")
 
     private lateinit var navController: NavController
-    private val gson = Gson()
     private val threadPool = Executors.newFixedThreadPool(10)
-    private val client: OkHttpClient by lazy {
-        OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }).build()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,69 +34,47 @@ class MainActivity : AppCompatActivity() {
 
         threadPool.execute {
             try {
-                val request: Request = Request.Builder()
-                    .url("https://recipes.androidsprint.ru/api/category")
-                    .build()
+                val categories = RecipesRepository.getCategories()
+                if (categories != null) {
+                    Log.i("!!!", "categories: $categories")
 
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        throw Exception("Ошибка запроса $response")
-                    }
+                    val categoryIds = categories.map { it.id }
+                    Log.i("!!!", "Список категорий: $categoryIds")
 
-                    val responseBody = response.body?.string()
-                    Log.i("!!!", "Body: $responseBody")
+                    getRecipesByCategoryIds(categoryIds)
 
-                    if (responseBody != null) {
-                        val categories =
-                            gson.fromJson(responseBody, Array<Category>::class.java).toList()
-
-                        val categoryIds = categories.map { it.id }
-                        Log.i("!!!", "Список категорий: $categoryIds")
-
-                        getRecipesByIds(categoryIds)
-                    } else {
-                        Log.e("!!!", "Response body is null")
+                } else {
+                    runOnUiThread {
+                        Toast.makeText(this, "Ошибка получения данных", Toast.LENGTH_SHORT).show()
                     }
                 }
-                Log.i("!!!", "Выполняю запрос на потоке: ${Thread.currentThread().name}")
             } catch (e: Exception) {
                 Log.e("!!!", "Ошибка при загрузке категорий", e)
+                runOnUiThread {
+                    Toast.makeText(this, "Ошибка получения данных", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
-    private fun getRecipesByIds(categoryIds: List<Int>) {
+    private fun getRecipesByCategoryIds(categoryIds: List<Int>) {
 
         if (categoryIds.isEmpty()) {
             Log.i("!!!", "Список ID категорий пуст")
             return
         }
 
-        val latch = CountDownLatch(categoryIds.size)
-
         categoryIds.forEach { categoryId ->
             threadPool.execute {
                 try {
-                    val request = Request.Builder()
-                        .url("https://recipes.androidsprint.ru/api/category/$categoryId/recipes")
-                        .build()
+                    val recipes = RecipesRepository.getRecipesByCategoryId(categoryId)
 
-                    client.newCall(request).execute().use { response ->
-                        if (!response.isSuccessful) {
-                            throw Exception("Ошибка запроса $response")
-                        }
-
-                        val jsonString = response.body?.string()
-
-                        val recipes = gson.fromJson(jsonString, Array<Recipe>::class.java).toList()
-
-                        recipes.forEach { recipe ->
-                            Log.i(
-                                "!!!",
-                                "Рецепт ${recipe.title} (ID: ${recipe.id}) из категории ${categoryId}"
-                            )
-                            Log.i("!!!", "----")
-                        }
+                    recipes?.forEach { recipe ->
+                        Log.i(
+                            "!!!",
+                            "Рецепт ${recipe.title} (ID: ${recipe.id}) из категории ${categoryId}"
+                        )
+                        Log.i("!!!", "----")
                     }
                 } catch (e: Exception) {
                     Log.e(
@@ -140,13 +82,9 @@ class MainActivity : AppCompatActivity() {
                         "Ошибка при загрузке рецептов для категории $categoryId",
                         e
                     )
-                } finally {
-                    latch.countDown()
                 }
             }
         }
-        latch.await()
-        Log.i("!!!", "Все запросы рецептов завершены")
     }
 
     private fun initNavigation() {

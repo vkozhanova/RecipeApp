@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -14,7 +15,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.myapplication.R
+import com.example.myapplication.data.ASSETS_BASE_PATH
 import com.example.myapplication.data.INVALID_RECIPE_ID
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
@@ -84,8 +87,10 @@ class RecipeFragment : Fragment() {
                 methodAdapter?.updateData(recipe.method)
             }
 
-            state.recipeImage?.let {
-                binding.headerImage.setImageDrawable(it)
+            state.recipe?.imageUrl?.let { imageUrl ->
+                Glide.with(requireContext())
+                    .load("${ASSETS_BASE_PATH}$imageUrl")
+                    .into(binding.headerImage)
             } ?: run {
                 Log.e("RecipeFragment", "Failed to load image for recipe: ${state.recipe?.title}")
             }
@@ -94,6 +99,13 @@ class RecipeFragment : Fragment() {
             Log.d("RecipeFragment", "Favorite state: ${state.isFavorite}")
 
             updatePortionsUI(state.portionsCount)
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            errorMessage?.let {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                viewModel.clearError()
+            }
         }
 
         binding.iconFavorites.setOnClickListener {

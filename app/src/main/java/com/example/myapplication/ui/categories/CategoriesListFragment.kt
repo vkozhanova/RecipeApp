@@ -4,16 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.myapplication.data.STUB
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import java.lang.IllegalArgumentException
 import kotlin.getValue
 
 class CategoriesListFragment : Fragment() {
@@ -49,6 +48,13 @@ class CategoriesListFragment : Fragment() {
             adapter.updateCategories(categories)
         }
 
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            errorMessage?.let {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                viewModel.clearError()
+            }
+        }
+
         viewModel.navigateToRecipes.observe(viewLifecycleOwner) { categoryId ->
             categoryId?.let {
                 openRecipesByCategoryId(it)
@@ -65,18 +71,16 @@ class CategoriesListFragment : Fragment() {
         }
     }
 
-   private fun openRecipesByCategoryId(categoryId: Int) {
-       val category = STUB.categories.find { it.id == categoryId }
+    private fun openRecipesByCategoryId(categoryId: Int) {
+        val category = viewModel.categories.value?.find { it.id == categoryId }
 
-       if (category == null) {
-           throw IllegalArgumentException("Category with id $categoryId not found")
-       }
+        if (category == null) {
+            Toast.makeText(requireContext(), "Категория не найдена", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val direction = CategoriesListFragmentDirections
-            .actionCategoriesListFragmentToRecipesListFragment(
-            category = category
-        )
-
+            .actionCategoriesListFragmentToRecipesListFragment(categoryId = categoryId)
         findNavController().navigate(direction)
     }
 

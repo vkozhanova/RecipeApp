@@ -3,53 +3,61 @@ package com.example.myapplication.ui.recipes.favorites
 import android.app.Application
 import android.content.Context
 import android.util.Log
-
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import com.example.myapplication.data.FAVORITES_KEY
 import com.example.myapplication.data.PREFS_NAME
-import com.example.myapplication.data.STUB
+import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Recipe
-import kotlinx.coroutines.flow.MutableStateFlow
+import java.util.concurrent.Executors
 
 class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
-    private val _state = MutableLiveData(FavoritesState())
-    val state: LiveData<FavoritesState>
-        get() = _state
+    private val _favoritesRecipe = MutableLiveData<List<Recipe>>()
+    val favoritesRecipe: LiveData<List<Recipe>>
+        get() = _favoritesRecipe
 
-    data class FavoritesState(
-        val favoritesRecipe: List<Recipe> = emptyList(),
-        val navigateToRecipe: Int? = null
-    )
+    private val _navigateToRecipe = MutableLiveData<Int?>()
+    val navigateToRecipe:  LiveData<Int?>
+        get() = _navigateToRecipe
 
-    val favoritesRecipe: LiveData<List<Recipe>> = state.map { it.favoritesRecipe }
-    val  navigateToRecipe: LiveData<Int?> = state.map { it.navigateToRecipe }
+    val _error = MutableLiveData<String?>()
+    val error: LiveData<String?>
+        get() = _error
+
+    private val executor = Executors.newSingleThreadExecutor()
     private val sharedPrefs = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
 
     init {
         loadFavorites()
     }
-
     fun loadFavorites() {
-        try {
-            val favoriteIds = getFavorites()
-            Log.d("Favorites", "Loading recipes for IDs: $favoriteIds")
-            _state.value = _state.value?.copy(STUB.getRecipesByIds(favoriteIds))
-        } catch (e: Exception) {
-            Log.d("Favorites", "Error loading favorites", e)
-            _state.value = _state.value?.copy(favoritesRecipe = emptyList())
+        executor.execute {
+            try {
+                val favoriteIds = getFavorites()
+                if (favoriteIds.isEmpty()) {
+                    _favoritesRecipe.postValue(emptyList())
+                    return@execute
+                }
+                Log.d("Favorites", "Loading recipes for IDs: $favoriteIds")
+
+                val recipes = RecipesRepository.getRecipesByIds(favoriteIds).orEmpty()
+
+                _favoritesRecipe.postValue(recipes)
+
+            } catch (e: Exception) {
+                Log.d("Favorites", "Error loading favorites", e)
+                _error.postValue("Ошибка получения данных")
+            }
         }
     }
 
     fun onRecipeClicked(recipeId: Int) {
-        _state.value = _state.value?.copy(navigateToRecipe = recipeId)
+        _navigateToRecipe.value = recipeId
     }
 
     fun resetNavigation() {
-        _state.value = _state.value?.copy(navigateToRecipe = null)
+        _navigateToRecipe.value = null
     }
 
     fun getFavorites(): Set<Int> {
@@ -57,5 +65,14 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
         return favoriteSet.mapNotNull { it.toIntOrNull() }.toSet()
 
+    }
+
+    fun clearError() {
+        _error.value = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        executor.shutdown()
     }
 }

@@ -1,10 +1,11 @@
 package com.example.myapplication.ui.recipes.recipeList
 
 import android.os.Bundle
-
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -40,7 +41,8 @@ class RecipesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val category = args.category
+        val categoryId = args.categoryId
+        viewModel.loadRecipes(categoryId)
 
         adapter = RecipesListAdapter(emptyList()) { recipe ->
             viewModel.onRecipeClicked(recipe.id)
@@ -51,17 +53,25 @@ class RecipesListFragment : Fragment() {
             adapter = this@RecipesListFragment.adapter
         }
 
-        binding.titleText.text = category.title
-
-        category.imageUrl.let { fileName ->
-            Glide.with(requireContext())
-                .load("${ASSETS_BASE_PATH}$fileName")
-                .into(binding.headerImage)
-
-        }
-
         viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
             adapter.updateRecipes(recipes)
+        }
+
+        viewModel.category.observe(viewLifecycleOwner) { category ->
+            category?.let {
+                binding.titleText.text = it.title
+                Log.d("RecipesFragment", "Category imageUrl = ${category.imageUrl}")
+                Glide.with(requireContext())
+                    .load("${ASSETS_BASE_PATH}${it.imageUrl}")
+                    .into(binding.headerImage)
+            }
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            errorMessage?.let {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                viewModel.clearError()
+            }
         }
 
         viewModel.navigateToId.observe(viewLifecycleOwner) { recipeId ->
@@ -72,7 +82,7 @@ class RecipesListFragment : Fragment() {
                 viewModel.resetNavigation()
             }
         }
-        viewModel.loadRecipes(category.id)
+
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
