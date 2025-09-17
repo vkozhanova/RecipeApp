@@ -15,8 +15,6 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     private val _state = MutableLiveData(RecipeListState())
     val state: LiveData<RecipeListState>
         get() = _state
-
-    private val repository = RecipesRepository()
     private val executor = Executors.newSingleThreadExecutor()
 
     val recipes: LiveData<List<Recipe>> = state.map { it.recipes }
@@ -37,9 +35,9 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     fun loadRecipes(categoryId: Int) {
         executor.execute {
             try {
-                val recipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
+                val recipes = RecipesRepository.getRecipesByCategoryId(categoryId) ?: emptyList()
 
-                val category = repository.getCategories()?.find { it.id == categoryId }
+                val category = RecipesRepository.getCategories()?.find { it.id == categoryId }
 
                 _state.postValue(
                     _state.value?.copy(

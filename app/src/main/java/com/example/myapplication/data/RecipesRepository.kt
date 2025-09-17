@@ -12,7 +12,7 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 
-class RecipesRepository() {
+object RecipesRepository {
     private val apiService: RecipeApiService
 
     init {

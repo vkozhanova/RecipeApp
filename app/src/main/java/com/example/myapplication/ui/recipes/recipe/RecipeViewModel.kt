@@ -3,7 +3,6 @@ package com.example.myapplication.ui.recipes.recipe
 
 import android.app.Application
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -13,8 +12,6 @@ import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Ingredient
 import com.example.myapplication.model.Recipe
-import java.io.IOException
-import java.io.InputStream
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.concurrent.Executors
@@ -32,8 +29,6 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         get() = _error
 
     private val executor = Executors.newSingleThreadExecutor()
-
-    private val repository = RecipesRepository()
 
     init {
         Log.i("RecipeViewModel", "VIEWMODEL INITIALIZED")
@@ -66,7 +61,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         executor.execute {
             try {
 
-                val recipe = repository.getRecipeById(recipeId)
+                val recipe = RecipesRepository.getRecipeById(recipeId)
                 Log.d("RecipeViewModel", "Recipe found: ${recipe?.title ?: "null"}")
 
                 val isFavorite = getFavorites().contains(recipeId.toString())

@@ -12,7 +12,6 @@ import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.databinding.ActivityMainBinding
 import java.util.concurrent.Executors
 
-
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
@@ -22,7 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private val threadPool = Executors.newFixedThreadPool(10)
-    private lateinit var repository: RecipesRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +30,11 @@ class MainActivity : AppCompatActivity() {
 
         initNavigation()
 
-        repository = RecipesRepository()
         Log.i("!!!", "Метод onCreate() выполняется на потоке: ${Thread.currentThread().name}")
 
         threadPool.execute {
             try {
-                val categories = repository.getCategories()
+                val categories = RecipesRepository.getCategories()
                 if (categories != null) {
                     Log.i("!!!", "categories: $categories")
 
@@ -70,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         categoryIds.forEach { categoryId ->
             threadPool.execute {
                 try {
-                    val recipes = repository.getRecipesByCategoryId(categoryId)
+                    val recipes = RecipesRepository.getRecipesByCategoryId(categoryId)
 
                     recipes?.forEach { recipe ->
                         Log.i(

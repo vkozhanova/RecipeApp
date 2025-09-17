@@ -25,7 +25,6 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     val error: LiveData<String?>
         get() = _error
 
-    private val repository = RecipesRepository()
     private val executor = Executors.newSingleThreadExecutor()
     private val sharedPrefs = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -42,7 +41,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 }
                 Log.d("Favorites", "Loading recipes for IDs: $favoriteIds")
 
-                val recipes = repository.getRecipesByIds(favoriteIds).orEmpty()
+                val recipes = RecipesRepository.getRecipesByIds(favoriteIds).orEmpty()
 
                 _favoritesRecipe.postValue(recipes)
 

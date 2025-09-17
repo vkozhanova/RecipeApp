@@ -7,7 +7,7 @@ import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Category
 import java.util.concurrent.Executors
 
-class CategoryListViewModel : ViewModel() {
+class CategoryListViewModel() : ViewModel() {
     private val _categories = MutableLiveData<List<Category>>()
     val categories: LiveData<List<Category>>
         get() = _categories
@@ -21,8 +21,6 @@ class CategoryListViewModel : ViewModel() {
     val navigateToRecipes: LiveData<Int?>
         get() = _navigateToRecipes
 
-    val repository = RecipesRepository()
-
     private val executor = Executors.newSingleThreadExecutor()
 
     init {
@@ -33,7 +31,7 @@ class CategoryListViewModel : ViewModel() {
 
         executor.execute {
             try {
-                val categories = repository.getCategories()
+                val categories = RecipesRepository.getCategories()
                 if (categories != null) {
                     _categories.postValue(categories)
                 } else {
