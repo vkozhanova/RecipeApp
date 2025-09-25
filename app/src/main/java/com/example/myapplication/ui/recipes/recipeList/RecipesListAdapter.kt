@@ -7,7 +7,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
-import com.example.myapplication.data.ASSETS_BASE_PATH
+import com.example.myapplication.data.BASE_IMAGE_URL
 import com.example.myapplication.databinding.ItemRecipeBinding
 import com.example.myapplication.model.Recipe
 
@@ -26,7 +26,9 @@ class RecipesListAdapter(
             Log.d("Adapter", "Recipe imageUrl = ${recipe.imageUrl}")
 
             Glide.with(binding.root.context)
-                .load("${ASSETS_BASE_PATH}${recipe.imageUrl}")
+                .load("${BASE_IMAGE_URL}${recipe.imageUrl}")
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_error)
                 .into(binding.recipeImage)
 
             binding.root.setOnClickListener {

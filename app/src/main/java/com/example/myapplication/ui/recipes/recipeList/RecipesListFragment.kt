@@ -15,7 +15,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.myapplication.data.ASSETS_BASE_PATH
+import com.example.myapplication.R
+import com.example.myapplication.data.BASE_IMAGE_URL
 import com.example.myapplication.databinding.FragmentListRecipesBinding
 import kotlin.getValue
 
@@ -62,7 +63,9 @@ class RecipesListFragment : Fragment() {
                 binding.titleText.text = it.title
                 Log.d("RecipesFragment", "Category imageUrl = ${category.imageUrl}")
                 Glide.with(requireContext())
-                    .load("${ASSETS_BASE_PATH}${it.imageUrl}")
+                    .load("${BASE_IMAGE_URL}${it.imageUrl}")
+                    .placeholder(R.drawable.img_placeholder)
+                    .error(R.drawable.img_error)
                     .into(binding.headerImage)
             }
         }

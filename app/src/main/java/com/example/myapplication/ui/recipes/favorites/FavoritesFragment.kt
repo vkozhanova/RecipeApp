@@ -41,6 +41,8 @@ class FavoritesFragment : Fragment() {
 
         Glide.with(requireContext())
             .load(R.drawable.bcg_favorites)
+            .placeholder(R.drawable.img_placeholder)
+            .error(R.drawable.img_error)
             .into(binding.headerImageFavorites)
 
         val adapter = RecipesListAdapter(emptyList()) { recipe ->

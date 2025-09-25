@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.categories
 
+import com.example.myapplication.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +36,8 @@ class CategoriesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.headerImage.setImageResource(R.drawable.bcg_categories)
+
         val adapter = CategoriesListAdapter(emptyList()) { categoryId ->
             viewModel.onCategorySelected(categoryId)
         }
@@ -46,6 +49,7 @@ class CategoriesListFragment : Fragment() {
 
         viewModel.categories.observe(viewLifecycleOwner) { categories ->
             adapter.updateCategories(categories)
+
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
@@ -70,6 +74,7 @@ class CategoriesListFragment : Fragment() {
             insets
         }
     }
+
 
     private fun openRecipesByCategoryId(categoryId: Int) {
         val category = viewModel.categories.value?.find { it.id == categoryId }
