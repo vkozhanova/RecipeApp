@@ -54,33 +54,30 @@ class RecipesListFragment : Fragment() {
             adapter = this@RecipesListFragment.adapter
         }
 
-        viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
-            adapter.updateRecipes(recipes)
-        }
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            adapter.updateRecipes(state.recipes)
 
-        viewModel.category.observe(viewLifecycleOwner) { category ->
-            category?.let {
+
+        state.category?.let {
                 binding.titleText.text = it.title
-                Log.d("RecipesFragment", "Category imageUrl = ${category.imageUrl}")
+                Log.d("RecipesFragment", "Category imageUrl = ${it.imageUrl}")
                 Glide.with(requireContext())
                     .load("${BASE_IMAGE_URL}${it.imageUrl}")
                     .placeholder(R.drawable.img_placeholder)
                     .error(R.drawable.img_error)
                     .into(binding.headerImage)
             }
-        }
 
-        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
-            errorMessage?.let {
+
+        state.error?.let { errorMessage ->
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                 viewModel.clearError()
             }
-        }
 
-        viewModel.navigateToId.observe(viewLifecycleOwner) { recipeId ->
-            recipeId?.let {
+
+        state.navigateToId?.let { recipeId ->
                 val direction =
-                    RecipesListFragmentDirections.actionRecipesListFragmentToRecipeFragment(recipeId = it)
+                    RecipesListFragmentDirections.actionRecipesListFragmentToRecipeFragment(recipeId = recipeId)
                 findNavController().navigate(direction)
                 viewModel.resetNavigation()
             }

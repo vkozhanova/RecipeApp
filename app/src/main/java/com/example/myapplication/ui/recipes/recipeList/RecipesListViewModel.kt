@@ -17,14 +17,6 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
         get() = _state
     private val executor = Executors.newSingleThreadExecutor()
 
-    val recipes: LiveData<List<Recipe>> = state.map { it.recipes }
-    val navigateToId: LiveData<Int?> = state.map { it.navigateToId }
-
-    val category: LiveData<Category?> = state.map { it.category }
-
-    val error: LiveData<String?> = state.map { it.error }
-
-
     data class RecipeListState(
         val recipes: List<Recipe> = emptyList(),
         val category: Category? = null,
