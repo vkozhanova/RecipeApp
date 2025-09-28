@@ -34,6 +34,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         Log.i("RecipeViewModel", "VIEWMODEL INITIALIZED")
         _state.value = RecipeState()
     }
+
     data class RecipeState(
         val recipe: Recipe? = null,
         val isFavorite: Boolean = false,
@@ -41,19 +42,32 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     )
 
     fun getAdjustedIngredients(): List<Ingredient> {
-        val state = state.value ?: return emptyList()
-        val recipe = state.recipe ?: return emptyList()
-        val portionsCount = state.portionsCount
+        return try {
+            val state = state.value ?: return emptyList()
+            val recipe = state.recipe ?: return emptyList()
+            val portionsCount = state.portionsCount
 
-        return recipe.ingredients.map { ingredient ->
+            recipe.ingredients.map { ingredient ->
+                try {
 
-            val formattedQuantity = BigDecimal(ingredient.quantity.replace(",", "."))
-                .multiply(BigDecimal(portionsCount))
-                .setScale(1, RoundingMode.HALF_UP)
-                .stripTrailingZeros()
-                .toPlainString()
+                    val quantityStr = ingredient.quantity.replace(",", ".")
+                    val quantityValue = if (quantityStr.isNotEmpty()) {
+                        BigDecimal(quantityStr).multiply(BigDecimal(portionsCount))
+                            .setScale(1, RoundingMode.HALF_UP)
+                            .stripTrailingZeros()
+                            .toPlainString()
+                    } else {
+                        ingredient.quantity
+                    }
 
-            ingredient.copy(quantity = formattedQuantity)
+                    ingredient.copy(quantity = quantityValue)
+                } catch (e: Exception) {
+                    ingredient
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("RecipeViewModel", "Error in getAdjustedIngredients", e)
+            emptyList()
         }
     }
 
@@ -69,16 +83,20 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
                 val currentState = state.value ?: RecipeState()
 
                 if (recipe != null) {
-                    _state.postValue(currentState.copy(
-                        recipe = recipe,
-                        isFavorite = isFavorite,
-                        portionsCount = currentState.portionsCount
-                    ))
-                }  else {
-                    _error.postValue("Ошибка при получении данных")
+                    _state.postValue(
+                        currentState.copy(
+                            recipe = recipe,
+                            isFavorite = isFavorite,
+                            portionsCount = currentState.portionsCount
+                        )
+                    )
+                    _error.postValue(null)
+                } else {
+                    _error.postValue("Рецепт с ID $recipeId не найден")
+                    _state.postValue(currentState.copy(recipe = null, isFavorite = false))
                 }
             } catch (e: Exception) {
-                _error.postValue("Ошибка при получении данных")
+                _error.postValue("Ошибка при получении данных: ${e.message}")
             }
         }
     }

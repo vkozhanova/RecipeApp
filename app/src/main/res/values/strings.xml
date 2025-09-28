@@ -19,4 +19,6 @@
     <string name="header_favorites_description">Picture of favorites header</string>
     <string name="empty_favorites_message">Вы еще не добавили ни одного рецепта в избранное</string>
     <string name="favorites_title">избранное</string>
+    <string name="recipe_not_found">Рецепт не найден!</string>
+
 </resources>

@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
-import com.example.myapplication.data.ASSETS_BASE_PATH
+import com.example.myapplication.data.BASE_IMAGE_URL
 import com.example.myapplication.data.INVALID_RECIPE_ID
 import com.example.myapplication.databinding.FragmentRecipeBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
@@ -76,29 +76,58 @@ class RecipeFragment : Fragment() {
         initRecyclers()
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
+
+            if (!isAdded || isDetached) return@observe
+
             Log.d("RecipeFragment", "State updated: ${state.recipe?.title}")
 
-            state.recipe?.let { recipe ->
-                binding.titleText.text = recipe.title
+            try {
+                state.recipe?.let { recipe ->
+                    binding.titleText.text = recipe.title
 
-                val adjustedIngredients = viewModel.getAdjustedIngredients()
+                    val adjustedIngredients = try {
+                        viewModel.getAdjustedIngredients()
+                    } catch (e: Exception) {
+                        Log.e(
+                            "RecipeFragment",
+                            "Ошибка в получении скорректированных ингредиентов",
+                            e
+                        )
+                        emptyList()
+                    }
+                    ingredientsAdapter?.updateIngredients(adjustedIngredients)
+                    methodAdapter?.updateData(recipe.method ?: emptyList())
 
-                ingredientsAdapter?.updateIngredients(adjustedIngredients)
-                methodAdapter?.updateData(recipe.method)
+                    recipe.imageUrl?.let { imageUrl ->
+                        Glide.with(requireContext())
+                            .load("${BASE_IMAGE_URL}$imageUrl")
+                            .placeholder(R.drawable.img_placeholder)
+                            .error(R.drawable.img_error)
+                            .into(binding.headerImage)
+                    } ?: run {
+                        binding.headerImage.setImageResource(R.drawable.img_error)
+                        Log.e(
+                            "RecipeFragment",
+                            "Не удалось загрузить изображение для рецепта: ${state.recipe.title}"
+                        )
+                    }
+
+                } ?: run {
+                    Log.e("!!!", "Рецепт не был загружен для отображения")
+                    binding.titleText.text = getString(R.string.recipe_not_found)
+                    ingredientsAdapter?.updateIngredients(emptyList())
+                    methodAdapter?.updateData(emptyList())
+                }
+
+                updateFavoriteIcon(state.isFavorite)
+                Log.d("RecipeFragment", "Favorite state: ${state.isFavorite}")
+
+                updatePortionsUI(state.portionsCount)
+            } catch (e: Exception) {
+                Log.e("RecipeFragment", "Error in state observer", e)
+                Toast.makeText(requireContext(), "Ошибка  отображения рецепта", Toast.LENGTH_SHORT)
+                    .show()
             }
-
-            state.recipe?.imageUrl?.let { imageUrl ->
-                Glide.with(requireContext())
-                    .load("${ASSETS_BASE_PATH}$imageUrl")
-                    .into(binding.headerImage)
-            } ?: run {
-                Log.e("RecipeFragment", "Failed to load image for recipe: ${state.recipe?.title}")
-            }
-
-            updateFavoriteIcon(state.isFavorite)
-            Log.d("RecipeFragment", "Favorite state: ${state.isFavorite}")
-
-            updatePortionsUI(state.portionsCount)
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
@@ -176,9 +205,11 @@ class RecipeFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        binding.rvIngredients.adapter = null
+        binding.rvMethod.adapter = null
         ingredientsAdapter = null
         methodAdapter = null
+        super.onDestroyView()
+        _binding = null
     }
 }

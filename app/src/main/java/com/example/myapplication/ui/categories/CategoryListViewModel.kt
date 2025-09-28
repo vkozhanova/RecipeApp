@@ -41,7 +41,6 @@ class CategoryListViewModel() : ViewModel() {
                 _error.postValue("Ошибка при получении данных")
             }
         }
-
     }
 
     fun onCategorySelected(categoryId: Int) {
