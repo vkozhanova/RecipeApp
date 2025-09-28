@@ -5,12 +5,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.myapplication.R
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.databinding.ActivityMainBinding
-import java.util.concurrent.Executors
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,7 +21,6 @@ class MainActivity : AppCompatActivity() {
             ?: throw IllegalStateException("Binding for ActivityMainBinding must not be null")
 
     private lateinit var navController: NavController
-    private val threadPool = Executors.newFixedThreadPool(10)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         Log.i("!!!", "Метод onCreate() выполняется на потоке: ${Thread.currentThread().name}")
 
-        threadPool.execute {
+        lifecycleScope.launch {
             try {
                 val categories = RecipesRepository.getCategories()
                 if (categories != null) {
@@ -44,15 +44,11 @@ class MainActivity : AppCompatActivity() {
                     getRecipesByCategoryIds(categoryIds)
 
                 } else {
-                    runOnUiThread {
-                        Toast.makeText(this, "Ошибка получения данных", Toast.LENGTH_SHORT).show()
-                    }
+                        Toast.makeText(this@MainActivity, "Ошибка получения данных", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Log.e("!!!", "Ошибка при загрузке категорий", e)
-                runOnUiThread {
-                    Toast.makeText(this, "Ошибка получения данных", Toast.LENGTH_SHORT).show()
-                }
+                    Toast.makeText(this@MainActivity, "Ошибка получения данных", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -65,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         categoryIds.forEach { categoryId ->
-            threadPool.execute {
+            lifecycleScope.launch {
                 try {
                     val recipes = RecipesRepository.getRecipesByCategoryId(categoryId)
 
@@ -104,7 +100,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        threadPool.shutdown()
         _binding = null
     }
 }
