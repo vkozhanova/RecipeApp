@@ -33,6 +33,7 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                 _state.postValue(
                     _state.value?.copy(
                         recipes = recipes,
+                        category = category,
                         error = null
                     )
                 )
