@@ -1,10 +1,11 @@
 [versions]
+room = "2.6.1"
 agp = "8.12.0"
 fragmentKtx = "1.8.6"
 fragmentKtxVersion = "1.6.2"
 glide = "5.0.5"
 gson = "2.13.1"
-kotlin = "2.0.21"
+kotlin = "2.2.20"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -20,13 +21,18 @@ constraintlayout = "2.2.1"
 cardview = "1.0.0"
 navigationFragmentKtx = "2.9.3"
 okhttp = "5.1.0"
-okhttpVersion = "4.12.0"
+okhttpVersion = "5.1.0"
 retrofit = "3.0.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 uiDesktop = "1.7.0"
 
 
 [libraries]
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-fragment-ktx-v162 = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtxVersion" }
@@ -60,5 +66,7 @@ retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit
 
 
 [plugins]
+
+kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.2.20-2.0.3" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
