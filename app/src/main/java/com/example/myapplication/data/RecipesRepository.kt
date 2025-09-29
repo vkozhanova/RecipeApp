@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.myapplication.model.Category
 import com.example.myapplication.model.Recipe
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -31,24 +33,33 @@ object RecipesRepository {
         apiService = retrofit.create(RecipeApiService::class.java)
     }
 
-    fun getCategories(): List<Category>? {
-        return executeCall(apiService.getCategories())
+    suspend fun getCategories(): List<Category>? {
+        return withContext(Dispatchers.IO) { executeCall(apiService.getCategories()) }
     }
 
-    fun getRecipesByCategoryId(categoryId: Int): List<Recipe>? {
-        return executeCall(apiService.getRecipesByCategoryId(categoryId))
+    suspend fun getRecipesByCategoryId(categoryId: Int): List<Recipe>? {
+        return withContext(Dispatchers.IO) {
+            executeCall(
+                apiService.getRecipesByCategoryId(
+                    categoryId
+                )
+            )
+        }
     }
 
-    fun getRecipeById(id: Int): Recipe? {
-        return executeCall(apiService.getRecipeById(id))
+    suspend fun getRecipeById(id: Int): Recipe? {
+        return withContext(Dispatchers.IO) { executeCall(apiService.getRecipeById(id)) }
     }
 
-    fun getRecipesByIds(ids: Set<Int>): List<Recipe>? {
-        if (ids.isEmpty()) return emptyList()
+    suspend fun getRecipesByIds(ids: Set<Int>): List<Recipe>? {
+        return withContext(Dispatchers.IO) {
 
-        val idsParam = ids.joinToString(",")
+            if (ids.isEmpty()) return@withContext emptyList()
 
-        return executeCall(apiService.getRecipesByIds(idsParam))
+            val idsParam = ids.joinToString(",")
+
+            executeCall(apiService.getRecipesByIds(idsParam))
+        }
     }
 
     private fun <T> executeCall(call: Call<T>): T? {

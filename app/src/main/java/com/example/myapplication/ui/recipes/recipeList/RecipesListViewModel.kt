@@ -4,18 +4,17 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Category
 import com.example.myapplication.model.Recipe
-import java.util.concurrent.Executors
+import kotlinx.coroutines.launch
 
 class RecipesListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _state = MutableLiveData(RecipeListState())
     val state: LiveData<RecipeListState>
         get() = _state
-    private val executor = Executors.newSingleThreadExecutor()
 
     data class RecipeListState(
         val recipes: List<Recipe> = emptyList(),
@@ -25,7 +24,7 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     )
 
     fun loadRecipes(categoryId: Int) {
-        executor.execute {
+        viewModelScope.launch {
             try {
                 val recipes = RecipesRepository.getRecipesByCategoryId(categoryId) ?: emptyList()
 
@@ -61,10 +60,5 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
 
     fun clearError() {
         _state.value = _state.value?.copy(error = null)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        executor.shutdown()
     }
 }

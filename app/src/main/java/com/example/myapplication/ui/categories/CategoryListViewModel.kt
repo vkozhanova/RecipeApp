@@ -3,9 +3,10 @@ package com.example.myapplication.ui.categories
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Category
-import java.util.concurrent.Executors
+import kotlinx.coroutines.launch
 
 class CategoryListViewModel() : ViewModel() {
     private val _categories = MutableLiveData<List<Category>>()
@@ -21,15 +22,13 @@ class CategoryListViewModel() : ViewModel() {
     val navigateToRecipes: LiveData<Int?>
         get() = _navigateToRecipes
 
-    private val executor = Executors.newSingleThreadExecutor()
-
     init {
         loadCategories()
     }
 
     fun loadCategories() {
 
-        executor.execute {
+        viewModelScope.launch {
             try {
                 val categories = RecipesRepository.getCategories()
                 if (categories != null) {
@@ -53,10 +52,5 @@ class CategoryListViewModel() : ViewModel() {
 
     fun clearError() {
         _error.value = null
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        executor.shutdown()
     }
 }

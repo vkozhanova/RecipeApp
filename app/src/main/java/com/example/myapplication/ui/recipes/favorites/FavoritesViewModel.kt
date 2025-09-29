@@ -6,11 +6,12 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.FAVORITES_KEY
 import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Recipe
-import java.util.concurrent.Executors
+import kotlinx.coroutines.launch
 
 class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
     private val _favoritesRecipe = MutableLiveData<List<Recipe>>()
@@ -18,26 +19,26 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
         get() = _favoritesRecipe
 
     private val _navigateToRecipe = MutableLiveData<Int?>()
-    val navigateToRecipe:  LiveData<Int?>
+    val navigateToRecipe: LiveData<Int?>
         get() = _navigateToRecipe
 
     val _error = MutableLiveData<String?>()
     val error: LiveData<String?>
         get() = _error
 
-    private val executor = Executors.newSingleThreadExecutor()
     private val sharedPrefs = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     init {
         loadFavorites()
     }
+
     fun loadFavorites() {
-        executor.execute {
+        viewModelScope.launch {
             try {
                 val favoriteIds = getFavorites()
                 if (favoriteIds.isEmpty()) {
                     _favoritesRecipe.postValue(emptyList())
-                    return@execute
+                    return@launch
                 }
                 Log.d("Favorites", "Loading recipes for IDs: $favoriteIds")
 
@@ -69,10 +70,5 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun clearError() {
         _error.value = null
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        executor.shutdown()
     }
 }

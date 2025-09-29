@@ -7,14 +7,15 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.FAVORITES_KEY
 import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Ingredient
 import com.example.myapplication.model.Recipe
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.concurrent.Executors
 
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPrefs = getApplication<Application>()
@@ -27,8 +28,6 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
     val error: LiveData<String?>
         get() = _error
-
-    private val executor = Executors.newSingleThreadExecutor()
 
     init {
         Log.i("RecipeViewModel", "VIEWMODEL INITIALIZED")
@@ -72,7 +71,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun loadRecipe(recipeId: Int) {
-        executor.execute {
+        viewModelScope.launch {
             try {
 
                 val recipe = RecipesRepository.getRecipeById(recipeId)
@@ -140,10 +139,5 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
     fun clearError() {
         _error.value = null
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        executor.shutdown()
     }
 }
