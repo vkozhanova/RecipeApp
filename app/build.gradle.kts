@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.ksp)
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
     kotlin("plugin.serialization")
@@ -47,11 +48,16 @@ dependencies {
 
     val nav_version = "2.9.3"
 
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    testImplementation(libs.androidx.room.testing)
+
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit)
-    implementation(libs.okhttp.v4120)
-    implementation(libs.logging.interceptor.v4120)
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.1.0"))
+    implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
     implementation(libs.gson)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.fragment)
