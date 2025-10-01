@@ -14,6 +14,7 @@ import com.example.myapplication.databinding.FragmentListCategoriesBinding
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.example.myapplication.data.RecipesRepository
 import kotlin.getValue
 
 class CategoriesListFragment : Fragment() {

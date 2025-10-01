@@ -18,6 +18,8 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = RecipesRepository(application)
     private val sharedPrefs = getApplication<Application>()
         .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val _state = MutableLiveData<RecipeState>()
@@ -74,7 +76,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             try {
 
-                val recipe = RecipesRepository.getRecipeById(recipeId)
+                val recipe = repository.getRecipeById(recipeId)
                 Log.d("RecipeViewModel", "Recipe found: ${recipe?.title ?: "null"}")
 
                 val isFavorite = getFavorites().contains(recipeId.toString())

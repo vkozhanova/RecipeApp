@@ -1,5 +1,5 @@
 [versions]
-room = "2.6.1"
+room = "2.8.1"
 agp = "8.12.0"
 fragmentKtx = "1.8.6"
 fragmentKtxVersion = "1.6.2"
@@ -11,7 +11,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
-kotlinParcelizeCompiler = "2.2.0-RC"
+kotlinParcelizeCompiler = "1.9.0"
 kotlinxSerializationJson = "1.9.0"
 loggingInterceptor = "4.11.0"
 loggingInterceptorVersion = "4.12.0"
@@ -67,6 +67,6 @@ retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit
 
 [plugins]
 
-kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.2.20-2.0.3" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.2.20-2.0.2" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
