@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class RecipesListViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val repository = RecipesRepository(application)
     private val _state = MutableLiveData(RecipeListState())
     val state: LiveData<RecipeListState>
         get() = _state
@@ -26,9 +27,9 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     fun loadRecipes(categoryId: Int) {
         viewModelScope.launch {
             try {
-                val recipes = RecipesRepository.getRecipesByCategoryId(categoryId) ?: emptyList()
+                val recipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
 
-                val category = RecipesRepository.getCategories()?.find { it.id == categoryId }
+                val category = repository.getCategories()?.find { it.id == categoryId }
 
                 _state.postValue(
                     _state.value?.copy(

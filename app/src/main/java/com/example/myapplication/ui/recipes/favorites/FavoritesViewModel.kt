@@ -14,6 +14,9 @@ import com.example.myapplication.model.Recipe
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = RecipesRepository(application)
+
     private val _favoritesRecipe = MutableLiveData<List<Recipe>>()
     val favoritesRecipe: LiveData<List<Recipe>>
         get() = _favoritesRecipe
@@ -42,7 +45,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 }
                 Log.d("Favorites", "Loading recipes for IDs: $favoriteIds")
 
-                val recipes = RecipesRepository.getRecipesByIds(favoriteIds).orEmpty()
+                val recipes = repository.getRecipesByIds(favoriteIds).orEmpty()
 
                 _favoritesRecipe.postValue(recipes)
 

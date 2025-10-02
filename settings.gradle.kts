@@ -11,7 +11,7 @@ pluginManagement {
         gradlePluginPortal()
     }
     plugins {
-        id("com.google.devtools.ksp") version "2.2.20-2.0.3" apply false
+        id("com.google.devtools.ksp") version "2.2.20-2.0.2"
     }
 }
 dependencyResolutionManagement {

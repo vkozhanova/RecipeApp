@@ -1,6 +1,8 @@
 package com.example.myapplication.data
 
+import android.content.Context
 import android.util.Log
+import androidx.room.Room
 import com.example.myapplication.model.Category
 import com.example.myapplication.model.Recipe
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -14,8 +16,30 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 
-object RecipesRepository {
+class RecipesRepository(val context: Context) {
     private val apiService: RecipeApiService
+    private val db: AppDatabase by lazy {
+        Room.databaseBuilder(
+            context.applicationContext,
+            AppDatabase::class.java,
+            "databaseRecipe"
+        ).build()
+    }
+    private val categoriesDao: CategoriesDao by lazy {
+        db.categoriesDao()
+    }
+
+    suspend fun getCategoriesFromCache(): List<Category> {
+        return withContext(Dispatchers.IO) {
+            categoriesDao.getCategories()
+        }
+    }
+
+    suspend fun saveCategoriesToCache(categories: List<Category>) {
+        withContext(Dispatchers.IO) {
+            categoriesDao.insertAll(categories)
+        }
+    }
 
     init {
         val contentType = "application/json".toMediaType()
