@@ -6,7 +6,7 @@ import com.example.myapplication.model.Category
 
 @Database(
     entities = [Category::class],
-    version = 1)
+    version = 1, exportSchema = false)
 
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoriesDao(): CategoriesDao
