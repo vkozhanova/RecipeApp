@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.recipes.recipeList
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,19 +28,36 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     fun loadRecipes(categoryId: Int) {
         viewModelScope.launch {
             try {
-                val recipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
+                var categories = repository.getCategoriesFromCache()
+                if (categories.isNotEmpty()) {
+                    Log.d("!!!", "No categories in cache, loading from network")
+                    val networkCategories = repository.getCategories()
+                    if (networkCategories != null) {
+                        repository.saveCategoriesToCache(networkCategories)
+                        categories = networkCategories
+                    }
+                }
+                val cachedRecipes = repository.getRecipesByCategoryIdFromCache(categoryId)
+                if (cachedRecipes.isNotEmpty()) {
+                    _state.value = _state.value?.copy(recipes = cachedRecipes)
+                }
 
-                val category = repository.getCategories()?.find { it.id == categoryId }
+                val networkRecipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
+                if (networkRecipes.isNotEmpty()) {
+                    repository.saveRecipesToCache(networkRecipes)
+                }
 
+                val category = repository.getCategoriesFromCache().find { it.id == categoryId }
                 _state.postValue(
                     _state.value?.copy(
-                        recipes = recipes,
+                        recipes = networkRecipes,
                         category = category,
                         error = null
                     )
                 )
 
             } catch (e: Exception) {
+                Log.e("!!!", "Error loading recipes", e)
                 _state.postValue(
                     _state.value?.copy(error = e.message ?: "Ошибка при получении данных")
                 )

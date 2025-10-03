@@ -23,10 +23,16 @@ class RecipesRepository(val context: Context) {
             context.applicationContext,
             AppDatabase::class.java,
             "databaseRecipe"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
     private val categoriesDao: CategoriesDao by lazy {
         db.categoriesDao()
+    }
+
+    private val recipeDao: RecipeDao by lazy {
+        db.recipesDao()
     }
 
     suspend fun getCategoriesFromCache(): List<Category> {
@@ -38,6 +44,24 @@ class RecipesRepository(val context: Context) {
     suspend fun saveCategoriesToCache(categories: List<Category>) {
         withContext(Dispatchers.IO) {
             categoriesDao.insertAll(categories)
+        }
+    }
+
+    suspend fun getRecipesFromCache(): List<Recipe> {
+        return withContext(Dispatchers.IO) {
+            recipeDao.getRecipes()
+        }
+    }
+
+    suspend fun getRecipesByCategoryIdFromCache(categoryId: Int):  List<Recipe> {
+        return withContext(Dispatchers.IO) {
+            recipeDao.getRecipesByCategoryId(categoryId)
+        }
+
+    }
+    suspend fun saveRecipesToCache(recipes: List<Recipe>) {
+        withContext(Dispatchers.IO) {
+            recipeDao.insertAll(recipes)
         }
     }
 
