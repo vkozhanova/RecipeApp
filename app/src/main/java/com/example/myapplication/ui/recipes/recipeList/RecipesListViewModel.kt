@@ -43,7 +43,7 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                 }
 
                 val networkRecipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
-                    repository.saveRecipesToCache(networkRecipes)
+                repository.saveRecipesToCache(networkRecipes)
 
                 val category = categories.find { it.id == categoryId }
                 _state.postValue(
