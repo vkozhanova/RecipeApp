@@ -29,7 +29,7 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             try {
                 var categories = repository.getCategoriesFromCache()
-                if (categories.isNotEmpty()) {
+                if (categories.isEmpty()) {
                     Log.d("!!!", "No categories in cache, loading from network")
                     val networkCategories = repository.getCategories()
                     if (networkCategories != null) {
@@ -43,11 +43,9 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                 }
 
                 val networkRecipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
-                if (networkRecipes.isNotEmpty()) {
                     repository.saveRecipesToCache(networkRecipes)
-                }
 
-                val category = repository.getCategoriesFromCache().find { it.id == categoryId }
+                val category = categories.find { it.id == categoryId }
                 _state.postValue(
                     _state.value?.copy(
                         recipes = networkRecipes,
