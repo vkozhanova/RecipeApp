@@ -1,7 +1,6 @@
 package com.example.myapplication.ui.recipes.recipeList
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,7 +59,6 @@ class RecipesListFragment : Fragment() {
 
         state.category?.let {
                 binding.titleText.text = it.title
-                Log.d("RecipesFragment", "Category imageUrl = ${it.imageUrl}")
                 Glide.with(requireContext())
                     .load("${BASE_IMAGE_URL}${it.imageUrl}")
                     .placeholder(R.drawable.img_placeholder)

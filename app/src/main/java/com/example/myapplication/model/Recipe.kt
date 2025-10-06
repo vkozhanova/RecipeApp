@@ -1,12 +1,26 @@
 package com.example.myapplication.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
+@Entity(tableName = "recipe")
 @Serializable
 data class Recipe(
-    val id: Int,
-    val title: String,
-    val ingredients: List<Ingredient>,
-    val method: List<String>,
-    val imageUrl: String,
-)
+    @PrimaryKey val id: Int,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "image_url") val imageUrl: String,
+    @ColumnInfo(name = "category_id") val categoryId: Int = 0,
+) {
+    @Ignore
+    val ingredients: List<Ingredient> = emptyList()
+
+    @Ignore
+    val method: List<String> = emptyList()
+}
+
+
+
+
