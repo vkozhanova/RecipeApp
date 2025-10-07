@@ -79,7 +79,7 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
                 val recipe = repository.getRecipeById(recipeId)
                 Log.d("RecipeViewModel", "Recipe found: ${recipe?.title ?: "null"}")
 
-                val isFavorite = getFavorites().contains(recipeId.toString())
+                val isFavorite = getFavoritesFromCache().contains(recipeId)
 
                 val currentState = state.value ?: RecipeState()
 
@@ -103,10 +103,16 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
 
-    fun getFavorites(): Set<String> {
+    fun getFavoritesFromCache(): Set<Int> {
         val favorites = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
         Log.d("Favorites", "Loaded favorites: $favorites")
-        return favorites
+        return favorites.mapNotNull { it.toIntOrNull() }.toSet()
+    }
+
+    fun saveFavoritesToCache(favorites: Set<Int>) {
+        sharedPrefs.edit()
+            .putStringSet(FAVORITES_KEY, favorites.map { it.toString() }.toSet())
+            .apply()
     }
 
     fun onFavoritesClicked() {
@@ -117,20 +123,14 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         _state.value = currentState.copy(isFavorite = newFavoriteState)
 
         updateFavorites(recipeId, newFavoriteState)
+        saveFavoritesToCache(getFavoritesFromCache())
     }
 
     fun updateFavorites(recipeId: Int, isFavorite: Boolean) {
-        val newFavorites = getFavorites().toMutableSet().apply {
-            if (isFavorite) add(recipeId.toString()) else remove(recipeId.toString())
+        val newFavorites = getFavoritesFromCache().toMutableSet().apply {
+            if (isFavorite) add(recipeId) else remove(recipeId)
         }
-        saveFavorites(newFavorites)
-    }
-
-    fun saveFavorites(favorites: Set<String>) {
-        Log.d("Favorites", "Saving favorites: $favorites")
-        sharedPrefs.edit()
-            .putStringSet(FAVORITES_KEY, favorites)
-            .apply()
+        saveFavoritesToCache(newFavorites)
     }
 
     fun setPortionsCount(count: Int) {

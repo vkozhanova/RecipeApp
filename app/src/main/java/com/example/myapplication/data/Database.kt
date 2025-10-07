@@ -7,7 +7,7 @@ import com.example.myapplication.model.Recipe
 
 @Database(
     entities = [Category::class, Recipe::class],
-    version = 2, exportSchema = false
+    version = 3, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
