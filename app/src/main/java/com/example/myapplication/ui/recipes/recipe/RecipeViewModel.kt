@@ -124,6 +124,22 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
         updateFavorites(recipeId, newFavoriteState)
         saveFavoritesToCache(getFavoritesFromCache())
+
+        viewModelScope.launch {
+            try {
+                val allFavorites = getFavoritesFromCache()
+                val recipes = repository.getRecipesByIds(allFavorites)
+
+                recipes?.forEach { recipe ->
+                    if(recipe.id == recipeId) {
+                        recipe.isFavorite = newFavoriteState
+                    }
+                }
+                repository.saveFavoritesToDatabase(recipes ?: emptyList())
+            } catch (e: Exception) {
+                Log.e("!!!", "Ошибка при обновлении избранных рецептов", e)
+            }
+        }
     }
 
     fun updateFavorites(recipeId: Int, isFavorite: Boolean) {
@@ -131,6 +147,19 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
             if (isFavorite) add(recipeId) else remove(recipeId)
         }
         saveFavoritesToCache(newFavorites)
+
+        viewModelScope.launch {
+            try {
+                val recipes = repository.getRecipesByIds(newFavorites)
+                recipes?.forEach { recipe ->
+                recipe.isFavorite = isFavorite
+                }
+                repository.saveFavoritesToDatabase(recipes ?: emptyList())
+            } catch (e: Exception) {
+                Log.e("!!!", "Ошибка при обновлении избранных рецептов в базе данных", e)
+            }
+
+        }
     }
 
     fun setPortionsCount(count: Int) {

@@ -13,7 +13,7 @@ data class Recipe(
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "image_url") val imageUrl: String,
     @ColumnInfo(name = "category_id") val categoryId: Int = 0,
-    @ColumnInfo(name = "is_favorite") val isFavorite: Boolean = false,
+    @ColumnInfo(name = "is_favorite") var isFavorite: Boolean = false,
 ) {
     @Ignore
     val ingredients: List<Ingredient> = emptyList()

@@ -25,7 +25,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     val navigateToRecipe: LiveData<Int?>
         get() = _navigateToRecipe
 
-    val _error = MutableLiveData<String?>()
+    private val _error = MutableLiveData<String?>()
     val error: LiveData<String?>
         get() = _error
 
