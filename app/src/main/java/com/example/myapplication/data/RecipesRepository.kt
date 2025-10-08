@@ -41,6 +41,18 @@ class RecipesRepository(val context: Context) {
         }
     }
 
+    suspend fun getFavoritesFromDatabase(): List<Recipe> {
+        return withContext(Dispatchers.IO) {
+            recipeDao.getFavorites()
+        }
+    }
+
+    suspend fun saveFavoritesToDatabase(favorites: List<Recipe>) {
+        withContext(Dispatchers.IO) {
+            recipeDao.insertAll(favorites)
+        }
+    }
+
     suspend fun saveCategoriesToCache(categories: List<Category>) {
         withContext(Dispatchers.IO) {
             categoriesDao.insertAll(categories)
@@ -53,12 +65,13 @@ class RecipesRepository(val context: Context) {
         }
     }
 
-    suspend fun getRecipesByCategoryIdFromCache(categoryId: Int):  List<Recipe> {
+    suspend fun getRecipesByCategoryIdFromCache(categoryId: Int): List<Recipe> {
         return withContext(Dispatchers.IO) {
             recipeDao.getRecipesByCategoryId(categoryId)
         }
 
     }
+
     suspend fun saveRecipesToCache(recipes: List<Recipe>) {
         withContext(Dispatchers.IO) {
             recipeDao.insertAll(recipes)
@@ -104,9 +117,7 @@ class RecipesRepository(val context: Context) {
 
             if (ids.isEmpty()) return@withContext emptyList()
 
-            val idsParam = ids.joinToString(",")
-
-            executeCall(apiService.getRecipesByIds(idsParam))
+            executeCall(apiService.getRecipesByIds(ids.joinToString(",")))
         }
     }
 

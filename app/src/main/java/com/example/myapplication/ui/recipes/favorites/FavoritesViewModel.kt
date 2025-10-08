@@ -25,7 +25,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     val navigateToRecipe: LiveData<Int?>
         get() = _navigateToRecipe
 
-    val _error = MutableLiveData<String?>()
+    private val _error = MutableLiveData<String?>()
     val error: LiveData<String?>
         get() = _error
 
@@ -38,22 +38,37 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     fun loadFavorites() {
         viewModelScope.launch {
             try {
-                val favoriteIds = getFavorites()
-                if (favoriteIds.isEmpty()) {
-                    _favoritesRecipe.postValue(emptyList())
+                val favoritesFromDatabase = repository.getFavoritesFromDatabase()
+
+                if (favoritesFromDatabase.isNotEmpty()) {
+                    _favoritesRecipe.postValue(favoritesFromDatabase)
                     return@launch
                 }
-                Log.d("Favorites", "Loading recipes for IDs: $favoriteIds")
 
-                val recipes = repository.getRecipesByIds(favoriteIds).orEmpty()
+                val favoriteIds = getFavoritesFromCache()
+                if (favoriteIds.isNotEmpty()) {
+                    val networkFavoritesRecipes =
+                        repository.getRecipesByIds(favoriteIds) ?: emptyList()
+                    repository.saveFavoritesToDatabase(networkFavoritesRecipes)
+                    _favoritesRecipe.postValue(networkFavoritesRecipes)
+                    return@launch
+                }
 
-                _favoritesRecipe.postValue(recipes)
+                val cacheRecipes = repository.getFavoritesFromDatabase()
+                _favoritesRecipe.postValue(cacheRecipes)
 
             } catch (e: Exception) {
-                Log.d("Favorites", "Error loading favorites", e)
+                Log.d("!!!", "Ошибка при загрузке избранных рецептов", e)
                 _error.postValue("Ошибка получения данных")
             }
         }
+    }
+
+
+    fun getFavoritesFromCache(): Set<Int> {
+        val favoriteSet = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
+
+        return favoriteSet.mapNotNull { it.toIntOrNull() }.toSet()
     }
 
     fun onRecipeClicked(recipeId: Int) {
@@ -62,13 +77,6 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun resetNavigation() {
         _navigateToRecipe.value = null
-    }
-
-    fun getFavorites(): Set<Int> {
-        val favoriteSet = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
-
-        return favoriteSet.mapNotNull { it.toIntOrNull() }.toSet()
-
     }
 
     fun clearError() {
