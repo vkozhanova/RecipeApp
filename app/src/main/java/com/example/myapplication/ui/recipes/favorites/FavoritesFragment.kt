@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
+import com.example.myapplication.RecipeApplication
 import com.example.myapplication.databinding.FragmentFavoritesBinding
 import com.example.myapplication.ui.recipes.recipeList.RecipesListAdapter
 
@@ -23,7 +24,15 @@ class FavoritesFragment : Fragment() {
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentFavoritesBinding must not be null")
-    private val viewModel: FavoritesViewModel by viewModels()
+
+    private lateinit var favoritesViewModel: FavoritesViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val appContainer = (requireActivity().application as RecipeApplication).appContainer
+        favoritesViewModel = appContainer.favoritesViewModelFactory.create()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,7 +55,7 @@ class FavoritesFragment : Fragment() {
             .into(binding.headerImageFavorites)
 
         val adapter = RecipesListAdapter(emptyList()) { recipe ->
-            viewModel.onRecipeClicked(recipe.id)
+            favoritesViewModel.onRecipeClicked(recipe.id)
         }
 
         binding.rvFavorites.apply {
@@ -54,32 +63,32 @@ class FavoritesFragment : Fragment() {
             this.adapter = adapter
         }
 
-        viewModel.favoritesRecipe.observe(viewLifecycleOwner) { recipes ->
+        favoritesViewModel.favoritesRecipe.observe(viewLifecycleOwner) { recipes ->
             adapter.updateRecipes(recipes)
             if (recipes.isEmpty()) showEmptyState() else hideEmptyState()
         }
 
-        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+        favoritesViewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                viewModel.clearError()
+                favoritesViewModel.clearError()
             }
         }
 
-        viewModel.navigateToRecipe.observe(viewLifecycleOwner) { recipeId ->
+        favoritesViewModel.navigateToRecipe.observe(viewLifecycleOwner) { recipeId ->
             recipeId?.let {
                 val direction =
                     FavoritesFragmentDirections.actionFavoritesFragmentToRecipeFragment(recipeId = it)
                 try {
                     findNavController().navigate(direction)
-                    viewModel.resetNavigation()
+                    favoritesViewModel.resetNavigation()
                 } catch (e: Exception) {
-                    viewModel.resetNavigation()
+                    favoritesViewModel.resetNavigation()
                 }
             }
         }
 
-        viewModel.loadFavorites()
+        favoritesViewModel.loadFavorites()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
