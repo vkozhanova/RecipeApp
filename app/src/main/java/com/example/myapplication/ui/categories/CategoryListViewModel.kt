@@ -1,16 +1,16 @@
 package com.example.myapplication.ui.categories
 
-import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Category
 import kotlinx.coroutines.launch
 
-class CategoryListViewModel(application: Application) : AndroidViewModel(application) {
+class CategoryListViewModel(
+    private val recipesRepository: RecipesRepository,
+) : ViewModel() {
     private val _categories = MutableLiveData<List<Category>>()
     val categories: LiveData<List<Category>>
         get() = _categories
@@ -24,24 +24,23 @@ class CategoryListViewModel(application: Application) : AndroidViewModel(applica
     val navigateToRecipes: LiveData<Int?>
         get() = _navigateToRecipes
 
-    private val repository = RecipesRepository(application)
-
     init {
         loadCategories()
     }
+
     fun loadCategories() {
 
         viewModelScope.launch {
             try {
-                val cachedCategories = repository.getCategoriesFromCache()
-                if (cachedCategories.isNotEmpty()){
+                val cachedCategories = recipesRepository.getCategoriesFromCache()
+                if (cachedCategories.isNotEmpty()) {
                     _categories.value = cachedCategories
                 }
 
-                val categories = repository.getCategories()
+                val categories = recipesRepository.getCategories()
                 if (categories != null) {
                     _categories.value = categories
-                    repository.saveCategoriesToCache(categories)
+                    recipesRepository.saveCategoriesToCache(categories)
                 } else {
                     _error.postValue("Ошибка при получении данных")
                 }

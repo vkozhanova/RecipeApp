@@ -1,38 +1,34 @@
 package com.example.myapplication.data
 
-import android.content.Context
+
+import android.content.SharedPreferences
 import android.util.Log
-import androidx.room.Room
 import com.example.myapplication.model.Category
 import com.example.myapplication.model.Recipe
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.Retrofit
+import kotlin.coroutines.CoroutineContext
 
-class RecipesRepository(val context: Context) {
-    private val apiService: RecipeApiService
-    private val db: AppDatabase by lazy {
-        Room.databaseBuilder(
-            context.applicationContext,
-            AppDatabase::class.java,
-            "databaseRecipe"
-        )
-            .fallbackToDestructiveMigration()
-            .build()
-    }
-    private val categoriesDao: CategoriesDao by lazy {
-        db.categoriesDao()
+class RecipesRepository(
+    private val recipeDao: RecipeDao,
+    private val categoriesDao: CategoriesDao,
+    private val recipeApiService: RecipeApiService,
+    private val ioDispatcher: CoroutineContext,
+    private val sharedPrefs: SharedPreferences,
+) {
+
+    fun saveFavoritesToCache(favorites: Set<Int>) {
+        sharedPrefs.edit()
+            .putStringSet(FAVORITES_KEY, favorites.map { it.toString() }.toSet())
+            .apply()
     }
 
-    private val recipeDao: RecipeDao by lazy {
-        db.recipesDao()
+    fun getFavoritesFromCache(): Set<Int> {
+        val favoriteSet = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
+
+        return favoriteSet.mapNotNull { it.toIntOrNull() }.toSet()
     }
 
     suspend fun getCategoriesFromCache(): List<Category> {
@@ -78,30 +74,15 @@ class RecipesRepository(val context: Context) {
         }
     }
 
-    init {
-        val contentType = "application/json".toMediaType()
-        val client = OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }).build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://recipes.androidsprint.ru/api/")
-            .client(client)
-            .addConverterFactory(Json.asConverterFactory(contentType))
-            .build()
-
-        apiService = retrofit.create(RecipeApiService::class.java)
-    }
 
     suspend fun getCategories(): List<Category>? {
-        return withContext(Dispatchers.IO) { executeCall(apiService.getCategories()) }
+        return withContext(Dispatchers.IO) { executeCall(recipeApiService.getCategories()) }
     }
 
     suspend fun getRecipesByCategoryId(categoryId: Int): List<Recipe>? {
         return withContext(Dispatchers.IO) {
             executeCall(
-                apiService.getRecipesByCategoryId(
+                recipeApiService.getRecipesByCategoryId(
                     categoryId
                 )
             )
@@ -109,7 +90,7 @@ class RecipesRepository(val context: Context) {
     }
 
     suspend fun getRecipeById(id: Int): Recipe? {
-        return withContext(Dispatchers.IO) { executeCall(apiService.getRecipeById(id)) }
+        return withContext(Dispatchers.IO) { executeCall(recipeApiService.getRecipeById(id)) }
     }
 
     suspend fun getRecipesByIds(ids: Set<Int>): List<Recipe>? {
@@ -117,7 +98,7 @@ class RecipesRepository(val context: Context) {
 
             if (ids.isEmpty()) return@withContext emptyList()
 
-            executeCall(apiService.getRecipesByIds(ids.joinToString(",")))
+            executeCall(recipeApiService.getRecipesByIds(ids.joinToString(",")))
         }
     }
 

@@ -1,19 +1,18 @@
 package com.example.myapplication.ui.recipes.recipeList
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Category
 import com.example.myapplication.model.Recipe
 import kotlinx.coroutines.launch
 
-class RecipesListViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = RecipesRepository(application)
+class RecipesListViewModel(
+    private val recipesRepository: RecipesRepository,
+) : ViewModel() {
     private val _state = MutableLiveData(RecipeListState())
     val state: LiveData<RecipeListState>
         get() = _state
@@ -28,22 +27,23 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     fun loadRecipes(categoryId: Int) {
         viewModelScope.launch {
             try {
-                var categories = repository.getCategoriesFromCache()
+                var categories = recipesRepository.getCategoriesFromCache()
                 if (categories.isEmpty()) {
                     Log.d("!!!", "No categories in cache, loading from network")
-                    val networkCategories = repository.getCategories()
+                    val networkCategories = recipesRepository.getCategories()
                     if (networkCategories != null) {
-                        repository.saveCategoriesToCache(networkCategories)
+                        recipesRepository.saveCategoriesToCache(networkCategories)
                         categories = networkCategories
                     }
                 }
-                val cachedRecipes = repository.getRecipesByCategoryIdFromCache(categoryId)
+                val cachedRecipes = recipesRepository.getRecipesByCategoryIdFromCache(categoryId)
                 if (cachedRecipes.isNotEmpty()) {
                     _state.value = _state.value?.copy(recipes = cachedRecipes)
                 }
 
-                val networkRecipes = repository.getRecipesByCategoryId(categoryId) ?: emptyList()
-                repository.saveRecipesToCache(networkRecipes)
+                val networkRecipes =
+                    recipesRepository.getRecipesByCategoryId(categoryId) ?: emptyList()
+                recipesRepository.saveRecipesToCache(networkRecipes)
 
                 val category = categories.find { it.id == categoryId }
                 _state.postValue(

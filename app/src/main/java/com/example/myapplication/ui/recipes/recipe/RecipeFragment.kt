@@ -11,12 +11,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
+import com.example.myapplication.RecipeApplication
 import com.example.myapplication.data.BASE_IMAGE_URL
 import com.example.myapplication.data.INVALID_RECIPE_ID
 import com.example.myapplication.databinding.FragmentRecipeBinding
@@ -42,10 +42,17 @@ class RecipeFragment : Fragment() {
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentRecipeBinding must not be null")
-    private val viewModel: RecipeViewModel by viewModels()
+    private lateinit var recipeViewModel: RecipeViewModel
     private val args: RecipeFragmentArgs by navArgs()
     private var ingredientsAdapter: IngredientsAdapter? = null
     private var methodAdapter: MethodAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val appContainer = (requireActivity().application as RecipeApplication).appContainer
+        recipeViewModel = appContainer.recipeViewModelFactory.create()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,11 +78,11 @@ class RecipeFragment : Fragment() {
             return
         }
 
-        viewModel.loadRecipe(recipeId)
+        recipeViewModel.loadRecipe(recipeId)
 
         initRecyclers()
 
-        viewModel.state.observe(viewLifecycleOwner) { state ->
+        recipeViewModel.state.observe(viewLifecycleOwner) { state ->
 
             if (!isAdded || isDetached) return@observe
 
@@ -86,7 +93,7 @@ class RecipeFragment : Fragment() {
                     binding.titleText.text = recipe.title
 
                     val adjustedIngredients = try {
-                        viewModel.getAdjustedIngredients()
+                        recipeViewModel.getAdjustedIngredients()
                     } catch (e: Exception) {
                         Log.e(
                             "RecipeFragment",
@@ -130,19 +137,19 @@ class RecipeFragment : Fragment() {
             }
         }
 
-        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+        recipeViewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                viewModel.clearError()
+                recipeViewModel.clearError()
             }
         }
 
         binding.iconFavorites.setOnClickListener {
-            viewModel.onFavoritesClicked()
+            recipeViewModel.onFavoritesClicked()
         }
 
         binding.seekbar.setOnSeekBarChangeListener(PortionSeekBarListener { currentProgress ->
-            viewModel.setPortionsCount(currentProgress)
+            recipeViewModel.setPortionsCount(currentProgress)
         })
     }
 

@@ -1,22 +1,18 @@
 package com.example.myapplication.ui.recipes.favorites
 
-import android.app.Application
-import android.content.Context
+
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.FAVORITES_KEY
-import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Recipe
 import kotlinx.coroutines.launch
 
-class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = RecipesRepository(application)
-
+class FavoritesViewModel(
+    private val recipesRepository: RecipesRepository,
+) : ViewModel() {
     private val _favoritesRecipe = MutableLiveData<List<Recipe>>()
     val favoritesRecipe: LiveData<List<Recipe>>
         get() = _favoritesRecipe
@@ -29,8 +25,6 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     val error: LiveData<String?>
         get() = _error
 
-    private val sharedPrefs = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
     init {
         loadFavorites()
     }
@@ -38,37 +32,32 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     fun loadFavorites() {
         viewModelScope.launch {
             try {
-                val favoritesFromDatabase = repository.getFavoritesFromDatabase()
 
-                if (favoritesFromDatabase.isNotEmpty()) {
-                    _favoritesRecipe.postValue(favoritesFromDatabase)
-                    return@launch
-                }
+                val favoriteIds = recipesRepository.getFavoritesFromCache()
 
-                val favoriteIds = getFavoritesFromCache()
-                if (favoriteIds.isNotEmpty()) {
+                val favoritesFromDatabase =
+                    recipesRepository.getFavoritesFromDatabase().toMutableList()
+
+                val missingIds = favoriteIds - favoritesFromDatabase.map { it.id }.toSet()
+
+                if (missingIds.isNotEmpty()) {
                     val networkFavoritesRecipes =
-                        repository.getRecipesByIds(favoriteIds) ?: emptyList()
-                    repository.saveFavoritesToDatabase(networkFavoritesRecipes)
-                    _favoritesRecipe.postValue(networkFavoritesRecipes)
-                    return@launch
+                        recipesRepository.getRecipesByIds(missingIds.toSet()) ?: emptyList()
+                    favoritesFromDatabase.addAll(networkFavoritesRecipes)
+                    recipesRepository.saveFavoritesToDatabase(favoritesFromDatabase)
                 }
 
-                val cacheRecipes = repository.getFavoritesFromDatabase()
-                _favoritesRecipe.postValue(cacheRecipes)
+                val favoriteMap = favoritesFromDatabase.associateBy { it.id }
+                val sortedFavorites = favoriteIds.mapNotNull { favoriteMap[it] }
+
+                _favoritesRecipe.postValue(sortedFavorites)
+                _error.postValue(null)
 
             } catch (e: Exception) {
                 Log.d("!!!", "Ошибка при загрузке избранных рецептов", e)
                 _error.postValue("Ошибка получения данных")
             }
         }
-    }
-
-
-    fun getFavoritesFromCache(): Set<Int> {
-        val favoriteSet = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
-
-        return favoriteSet.mapNotNull { it.toIntOrNull() }.toSet()
     }
 
     fun onRecipeClicked(recipeId: Int) {

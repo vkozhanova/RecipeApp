@@ -12,10 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.myapplication.databinding.FragmentListCategoriesBinding
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.example.myapplication.data.RecipesRepository
-import kotlin.getValue
+import com.example.myapplication.RecipeApplication
+
 
 class CategoriesListFragment : Fragment() {
     private var _binding: FragmentListCategoriesBinding? = null
@@ -23,7 +22,15 @@ class CategoriesListFragment : Fragment() {
         get() = _binding
             ?: throw IllegalStateException("Binding for FragmentListCategoriesBinding must not be null")
 
-    private val viewModel: CategoryListViewModel by viewModels()
+    private lateinit var categoriesListViewModel: CategoryListViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val appContainer = (requireActivity().application as RecipeApplication).appContainer
+        categoriesListViewModel = appContainer.categoriesListViewModelFactory.create()
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +47,7 @@ class CategoriesListFragment : Fragment() {
         binding.headerImage.setImageResource(R.drawable.bcg_categories)
 
         val adapter = CategoriesListAdapter(emptyList()) { categoryId ->
-            viewModel.onCategorySelected(categoryId)
+            categoriesListViewModel.onCategorySelected(categoryId)
         }
 
         binding.rvCategories.apply {
@@ -48,22 +55,22 @@ class CategoriesListFragment : Fragment() {
             layoutManager = GridLayoutManager(requireContext(), 2)
         }
 
-        viewModel.categories.observe(viewLifecycleOwner) { categories ->
+        categoriesListViewModel.categories.observe(viewLifecycleOwner) { categories ->
             adapter.updateCategories(categories)
 
         }
 
-        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+        categoriesListViewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                viewModel.clearError()
+                categoriesListViewModel.clearError()
             }
         }
 
-        viewModel.navigateToRecipes.observe(viewLifecycleOwner) { categoryId ->
+        categoriesListViewModel.navigateToRecipes.observe(viewLifecycleOwner) { categoryId ->
             categoryId?.let {
                 openRecipesByCategoryId(it)
-                viewModel.onNavigationComplete()
+                categoriesListViewModel.onNavigationComplete()
             }
         }
 
@@ -78,7 +85,7 @@ class CategoriesListFragment : Fragment() {
 
 
     private fun openRecipesByCategoryId(categoryId: Int) {
-        val category = viewModel.categories.value?.find { it.id == categoryId }
+        val category = categoriesListViewModel.categories.value?.find { it.id == categoryId }
 
         if (category == null) {
             Toast.makeText(requireContext(), "Категория не найдена", Toast.LENGTH_SHORT).show()

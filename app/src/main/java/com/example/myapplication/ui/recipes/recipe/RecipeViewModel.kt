@@ -1,15 +1,10 @@
 package com.example.myapplication.ui.recipes.recipe
 
-
-import android.app.Application
-import android.content.Context
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.FAVORITES_KEY
-import com.example.myapplication.data.PREFS_NAME
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Ingredient
 import com.example.myapplication.model.Recipe
@@ -17,11 +12,9 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class RecipeViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = RecipesRepository(application)
-    private val sharedPrefs = getApplication<Application>()
-        .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+class RecipeViewModel(
+    private val recipesRepository: RecipesRepository,
+) : ViewModel() {
     private val _state = MutableLiveData<RecipeState>()
     val state: LiveData<RecipeState>
         get() = _state
@@ -76,10 +69,10 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             try {
 
-                val recipe = repository.getRecipeById(recipeId)
+                val recipe = recipesRepository.getRecipeById(recipeId)
                 Log.d("RecipeViewModel", "Recipe found: ${recipe?.title ?: "null"}")
 
-                val isFavorite = getFavoritesFromCache().contains(recipeId)
+                val isFavorite = recipesRepository.getFavoritesFromCache().contains(recipeId)
 
                 val currentState = state.value ?: RecipeState()
 
@@ -102,19 +95,6 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-
-    fun getFavoritesFromCache(): Set<Int> {
-        val favorites = sharedPrefs.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
-        Log.d("Favorites", "Loaded favorites: $favorites")
-        return favorites.mapNotNull { it.toIntOrNull() }.toSet()
-    }
-
-    fun saveFavoritesToCache(favorites: Set<Int>) {
-        sharedPrefs.edit()
-            .putStringSet(FAVORITES_KEY, favorites.map { it.toString() }.toSet())
-            .apply()
-    }
-
     fun onFavoritesClicked() {
         val currentState = state.value ?: return
         val recipeId = currentState.recipe?.id ?: return
@@ -123,19 +103,20 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         _state.value = currentState.copy(isFavorite = newFavoriteState)
 
         updateFavorites(recipeId, newFavoriteState)
-        saveFavoritesToCache(getFavoritesFromCache())
 
         viewModelScope.launch {
             try {
-                val allFavorites = getFavoritesFromCache()
-                val recipes = repository.getRecipesByIds(allFavorites)
+                val allFavorites = recipesRepository.getFavoritesFromCache()
+                val existingFavorites = recipesRepository.getFavoritesFromDatabase().toMutableList()
+                val updatesRecipes = recipesRepository.getRecipesByIds(allFavorites) ?: emptyList()
+                val mergedFavorites = (existingFavorites + updatesRecipes).distinctBy { it.id }
 
-                recipes?.forEach { recipe ->
+                mergedFavorites.forEach { recipe ->
                     if(recipe.id == recipeId) {
                         recipe.isFavorite = newFavoriteState
                     }
                 }
-                repository.saveFavoritesToDatabase(recipes ?: emptyList())
+                recipesRepository.saveFavoritesToDatabase(mergedFavorites)
             } catch (e: Exception) {
                 Log.e("!!!", "Ошибка при обновлении избранных рецептов", e)
             }
@@ -143,18 +124,18 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun updateFavorites(recipeId: Int, isFavorite: Boolean) {
-        val newFavorites = getFavoritesFromCache().toMutableSet().apply {
+        val newFavorites = recipesRepository.getFavoritesFromCache().toMutableSet().apply {
             if (isFavorite) add(recipeId) else remove(recipeId)
         }
-        saveFavoritesToCache(newFavorites)
+        recipesRepository.saveFavoritesToCache(newFavorites)
 
         viewModelScope.launch {
             try {
-                val recipes = repository.getRecipesByIds(newFavorites)
+                val recipes = recipesRepository.getRecipesByIds(newFavorites)
                 recipes?.forEach { recipe ->
                 recipe.isFavorite = isFavorite
                 }
-                repository.saveFavoritesToDatabase(recipes ?: emptyList())
+                recipesRepository.saveFavoritesToDatabase(recipes ?: emptyList())
             } catch (e: Exception) {
                 Log.e("!!!", "Ошибка при обновлении избранных рецептов в базе данных", e)
             }
