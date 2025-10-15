@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,9 +18,10 @@ import com.example.myapplication.R
 import com.example.myapplication.RecipeApplication
 import com.example.myapplication.data.BASE_IMAGE_URL
 import com.example.myapplication.databinding.FragmentListRecipesBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.getValue
 
-
+@AndroidEntryPoint
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentListRecipesBinding? = null
     private val binding
@@ -28,14 +30,8 @@ class RecipesListFragment : Fragment() {
 
     private val args: RecipesListFragmentArgs by navArgs()
     private lateinit var adapter: RecipesListAdapter
-    private lateinit var recipeListViewModel: RecipesListViewModel
+    private val recipeListViewModel: RecipesListViewModel by  viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val appContainer = (requireActivity().application as RecipeApplication).appContainer
-        recipeListViewModel = appContainer.recipesListViewModelFactory.create()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

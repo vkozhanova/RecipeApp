@@ -3,19 +3,20 @@ package com.example.myapplication.data
 
 import android.content.SharedPreferences
 import android.util.Log
+import com.example.myapplication.di.IODispatcher
 import com.example.myapplication.model.Category
 import com.example.myapplication.model.Recipe
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Response
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class RecipesRepository(
+class RecipesRepository @Inject constructor(
     private val recipeDao: RecipeDao,
     private val categoriesDao: CategoriesDao,
     private val recipeApiService: RecipeApiService,
-    private val ioDispatcher: CoroutineContext,
+    @IODispatcher private val ioDispatcher: CoroutineContext,
     private val sharedPrefs: SharedPreferences,
 ) {
 
@@ -32,55 +33,55 @@ class RecipesRepository(
     }
 
     suspend fun getCategoriesFromCache(): List<Category> {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             categoriesDao.getCategories()
         }
     }
 
     suspend fun getFavoritesFromDatabase(): List<Recipe> {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             recipeDao.getFavorites()
         }
     }
 
     suspend fun saveFavoritesToDatabase(favorites: List<Recipe>) {
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             recipeDao.insertAll(favorites)
         }
     }
 
     suspend fun saveCategoriesToCache(categories: List<Category>) {
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             categoriesDao.insertAll(categories)
         }
     }
 
     suspend fun getRecipesFromCache(): List<Recipe> {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             recipeDao.getRecipes()
         }
     }
 
     suspend fun getRecipesByCategoryIdFromCache(categoryId: Int): List<Recipe> {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             recipeDao.getRecipesByCategoryId(categoryId)
         }
 
     }
 
     suspend fun saveRecipesToCache(recipes: List<Recipe>) {
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             recipeDao.insertAll(recipes)
         }
     }
 
 
     suspend fun getCategories(): List<Category>? {
-        return withContext(Dispatchers.IO) { executeCall(recipeApiService.getCategories()) }
+        return withContext(ioDispatcher) { executeCall(recipeApiService.getCategories()) }
     }
 
     suspend fun getRecipesByCategoryId(categoryId: Int): List<Recipe>? {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
             executeCall(
                 recipeApiService.getRecipesByCategoryId(
                     categoryId
@@ -90,11 +91,11 @@ class RecipesRepository(
     }
 
     suspend fun getRecipeById(id: Int): Recipe? {
-        return withContext(Dispatchers.IO) { executeCall(recipeApiService.getRecipeById(id)) }
+        return withContext(ioDispatcher) { executeCall(recipeApiService.getRecipeById(id)) }
     }
 
     suspend fun getRecipesByIds(ids: Set<Int>): List<Recipe>? {
-        return withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
 
             if (ids.isEmpty()) return@withContext emptyList()
 
