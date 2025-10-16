@@ -22,7 +22,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Qualifier
+import javax.inject.Qualifier
+import javax.inject.Singleton
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -47,18 +48,22 @@ class RecipeModule {
             .build()
 
     @Provides
+    @Singleton
     fun provideCategoriesDao(appDatabase: AppDatabase) = appDatabase.categoriesDao()
 
     @Provides
+    @Singleton
     fun provideRecipesDao(appDatabase: AppDatabase) = appDatabase.recipesDao()
 
     @Provides
+    @Singleton
     fun providesHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }).build()
 
     @Provides
+    @Singleton
     fun providesRetrofit(client: OkHttpClient): Retrofit {
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
@@ -69,14 +74,17 @@ class RecipeModule {
     }
 
     @Provides
+    @Singleton
     fun providesRecipeApiService(retrofit: Retrofit): RecipeApiService =
         retrofit.create(RecipeApiService::class.java)
 
     @Provides
+    @Singleton
     fun providesSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     @Provides
+    @Singleton
     fun provideRepository(
         recipeDao: RecipeDao,
         categoriesDao: CategoriesDao,
