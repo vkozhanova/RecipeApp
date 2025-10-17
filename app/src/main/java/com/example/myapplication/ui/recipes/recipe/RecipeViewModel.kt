@@ -8,11 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.RecipesRepository
 import com.example.myapplication.model.Ingredient
 import com.example.myapplication.model.Recipe
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class RecipeViewModel(
+@HiltViewModel
+class RecipeViewModel @Inject constructor(
     private val recipesRepository: RecipesRepository,
 ) : ViewModel() {
     private val _state = MutableLiveData<RecipeState>()
@@ -112,7 +115,7 @@ class RecipeViewModel(
                 val mergedFavorites = (existingFavorites + updatesRecipes).distinctBy { it.id }
 
                 mergedFavorites.forEach { recipe ->
-                    if(recipe.id == recipeId) {
+                    if (recipe.id == recipeId) {
                         recipe.isFavorite = newFavoriteState
                     }
                 }
@@ -133,7 +136,7 @@ class RecipeViewModel(
             try {
                 val recipes = recipesRepository.getRecipesByIds(newFavorites)
                 recipes?.forEach { recipe ->
-                recipe.isFavorite = isFavorite
+                    recipe.isFavorite = isFavorite
                 }
                 recipesRepository.saveFavoritesToDatabase(recipes ?: emptyList())
             } catch (e: Exception) {
