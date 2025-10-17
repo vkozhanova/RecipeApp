@@ -6,17 +6,18 @@ import android.util.Log
 import com.example.myapplication.di.IODispatcher
 import com.example.myapplication.model.Category
 import com.example.myapplication.model.Recipe
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
+
 
 class RecipesRepository @Inject constructor(
     private val recipeDao: RecipeDao,
     private val categoriesDao: CategoriesDao,
     private val recipeApiService: RecipeApiService,
-    @IODispatcher private val ioDispatcher: CoroutineContext,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val sharedPrefs: SharedPreferences,
 ) {
 
