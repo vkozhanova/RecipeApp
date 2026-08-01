@@ -59,7 +59,7 @@
             app:backgroundTint="@null"
             app:icon="@drawable/ic_heart_empty"
             app:iconGravity="textEnd"
-            app:iconPadding="@dimen/main_space_half_8"
+            app:iconPadding="@dimen/space_half_4"
             app:iconSize="@dimen/height_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
