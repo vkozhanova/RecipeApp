@@ -3,6 +3,9 @@ package com.example.myapplication.ui
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.myapplication.R
@@ -24,6 +27,12 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.buttonsContainer) { view, insets ->
+            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            view.updatePadding(bottom = bottomInset + resources.getDimensionPixelSize(R.dimen.main_space_half_8))
+            insets
+        }
 
         initNavigation()
     }
